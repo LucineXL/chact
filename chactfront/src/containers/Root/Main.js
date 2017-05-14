@@ -13,17 +13,28 @@ class Main extends Component {
         super(props);
         this.settingShow = this.settingShow.bind(this);
         this.changeTheme = this.changeTheme.bind(this);
-        this.showModal = this.showModal.bind(this);
-        this.closeModal = this.closeModal.bind(this);
+        this.changeModal = this.changeModal.bind(this);
+        this.logout = this.logout.bind(this);
         this.state = {
           showSetting: false,
-          themeChange:false,
+          themeVisible:false,
+          logoutVisible:false,
+          groupVisible:false,
           theme:1
         };
     }
     componentWillMount() {
-      const {auth,getGroup} = this.props;
-      getGroup(auth.get('username'));
+      const {app,auth,getGroup} = this.props;
+      console.log(app)
+      console.log(auth);
+      if(auth.size && !app.size){
+        getGroup(auth.get('username'));
+      }
+    }
+    logout(){
+      sessionStorage.removeItem('auth');
+      this.changeModal.bind(this,'logoutVisible',false);
+      location.reload();
     }
     settingShow(){
       const that = this;
@@ -41,22 +52,19 @@ class Main extends Component {
         theme:val
       })
     }
-    closeModal(val){
+    changeModal(key,val){
+      console.log(123);
       this.setState({
-        [val]:false
-      })
-    }
-    showModal(val){
-      this.setState({
-        [val]:true
+        [key]:val
       })
     }
     render() {
-      const { showSetting, theme, themeChange} = this.state;
-      const { allGroup } = this.props;
-      if(!allGroup){
+      const { showSetting, theme, themeVisible,logoutVisible,groupVisible} = this.state;
+      const { app } = this.props;
+      if(!app.get('allGroup')){
         return false;
       }
+      const allGroup = app.get('allGroup');
       const img = require('source/photo.jpg');
       return (
         <div className={`chart theme${theme}`}>
@@ -72,17 +80,17 @@ class Main extends Component {
                   <div className='setItem'>
                     <Icon type="user-add" style={{ color: '#f1a52f' }} />添加好友
                   </div>
-                  <div className='setItem'>
-                    <Icon type="usergroup-add" style={{ color: '#5788d9' }} />添加群聊
+                  <div className='setItem' onClick={this.changeModal.bind(this,'groupVisible',true)}>
+                    <Icon type="usergroup-add" style={{ color: '#5788d9' }} />创建群聊
                   </div>
-                  <div className='setItem' onClick={this.showModal.bind(this,'themeChange')}>
+                  <div className='setItem' onClick={this.changeModal.bind(this,'themeVisible',true)}>
                     <Icon type="skin" style={{ color: '#70cc29' }} />更换主题
                   </div>
                   <div className='setItem'>
                     <Icon type="setting" style={{ color: '#a645dc' }} />信息编辑
                   </div>
-                  <div className='setItem'>
-                    <Icon type="export" style={{ color: '#ff435a' }} />退出
+                  <div className='setItem' onClick={this.changeModal.bind(this,'logoutVisible',true)}>
+                    <Icon type="export" style={{ color: '#ff435a' }}/>退出
                   </div>
                 </div>
               }
@@ -124,8 +132,8 @@ class Main extends Component {
           <div className='center'>
             {this.props.children}
           </div>
-          <Modal visible={themeChange} width={455} closable footer={null} className='changeTheme'
-            onCancel={this.closeModal.bind(this, 'themeChange')}>
+          <Modal visible={themeVisible} width={455} closable footer={null} className='themeModal' maskClosable={false}
+            onCancel={this.changeModal.bind(this, 'themeVisible',false)}>
             <p className='title'>主题</p>
             <div className='themeBox'>
               <span className={`themeItem${theme == 1 ? ' activeTheme' : ''}`} style={{ background: '#E3E7EF' }}
@@ -142,16 +150,27 @@ class Main extends Component {
                 onClick={this.changeTheme.bind(this, 6)}>高调黑</span>
             </div>
           </Modal>
+          <Modal visible={logoutVisible} width={400} closable className='logoutModal' maskClosable={false}
+            onCancel={this.changeModal.bind(this,'logoutVisible',false)} onOk={this.logout}>
+            您确定要退出吗？
+          </Modal>
+          <Modal visible={groupVisible} width={455} closable className='groupModal' maskClosable={false}
+            onCancel={this.changeModal.bind(this,'groupVisible',false)} onOk={this.logout}>
+            <div>
+              <Input type='text' maxLength={20} />
+
+            </div>
+          </Modal>
         </div>
       );
     }
 }
 function mapStateToProps(state) {
   const auth = state.get('auth');
-  const allGroup = state.getIn(['app','allGroup']);
+  const app = state.get('app');
   return {
     auth,
-    allGroup
+    app
   }
 }
 function mapDispatchToProps(dispatch) {

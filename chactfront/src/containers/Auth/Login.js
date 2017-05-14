@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Button ,Input ,Icon ,message} from 'antd';
-import {requestLogin} from 'actions/auth'
+import {requestLogin} from 'actions/auth';
+import {getGroup} from 'actions/user';
 import './style'
 import {push} from 'react-router-redux'
 
@@ -12,11 +13,13 @@ class Login extends Component {
         this.login = this.login.bind(this);
     }
     login(){
-        this.props.requestLogin({
+      const {requestLogin,getGroup,push} = this.props;
+        requestLogin({
             username:this.refs.username.refs.input.value,
             password:this.refs.password.refs.input.value
-        }).then(()=>{
-            this.props.push('/')
+        }).then((result)=>{
+            push('/');
+            getGroup(result.username)
         }).catch((result)=>{
             message.error(result.message)
         })
@@ -52,7 +55,10 @@ function mapStateToProps(state) {
     return { app }
 }
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({requestLogin,push}, dispatch)
+    return bindActionCreators({
+      getGroup,
+      requestLogin,
+      push}, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login)

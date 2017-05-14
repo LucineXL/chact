@@ -135,7 +135,7 @@
         }
     }
 }
-.changeTheme{
+.themeModal{
     .title{
         font-size: 16px;
         padding: 10px;
@@ -156,7 +156,17 @@
             }
         }
     }
+    .activeTheme{
+        border: 3px solid #5788d9 !important;
+    }
 }
-.activeTheme{
-    border: 3px solid #5788d9 !important;
+.logoutModal{
+  .ant-modal-body{
+    padding: 30px;
+    height: 110px;
+    font-size: 16px;
+  }
+  .ant-modal-footer{
+    padding: 20px 16px 20px 10px;
+  }
 }
