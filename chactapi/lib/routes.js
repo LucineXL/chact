@@ -36,6 +36,7 @@ module.exports = function (router, socket) {
         success: true,
         result: {
           group:{
+            _id:group._id,
             groupname:group.groupname
           }
         }

@@ -17,6 +17,14 @@ const history = syncHistoryWithStore(hashHistory, store, {
         return state.get('routing').toJS();
     }
 });
+console.log(location.hash.slice(2))
+if (location.hash.slice(2)) {
+    location.replace('/');
+}
+// if (location.hash) {
+//     location.replace('/');
+// }
+
 class App extends Component {
     constructor(props) {
         super(props);
