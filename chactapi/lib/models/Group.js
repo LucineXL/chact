@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 const GroupSchema = new Schema({
     groupname: {
         type:String,
-        unique:true
+        unique:true,//不可重复约束
+        require:true
     },
     messages : [{
         type:Schema.Types.ObjectId,

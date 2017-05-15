@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import {Menu,Icon ,Input ,Modal,Spin} from 'antd';
-import {getGroup} from 'actions/user';
+import {Menu,Icon ,Input ,Modal,Spin,Button,message} from 'antd';
+import {getGroup,createGroup} from 'actions/user';
 import Chact from './Chact'
 import './style.scss'
 const Search = Input.Search;
@@ -14,19 +14,20 @@ class Main extends Component {
         this.settingShow = this.settingShow.bind(this);
         this.changeTheme = this.changeTheme.bind(this);
         this.changeModal = this.changeModal.bind(this);
+        this.createGroup = this.createGroup.bind(this);
+        this.showCreate = this.showCreate.bind(this);
         this.logout = this.logout.bind(this);
         this.state = {
           showSetting: false,
           themeVisible:false,
           logoutVisible:false,
           groupVisible:false,
+          createError:'',
           theme:1
         };
     }
     componentWillMount() {
       const {app,auth,getGroup} = this.props;
-      console.log(app)
-      console.log(auth);
       if(auth.size && !app.size){
         getGroup(auth.get('username'));
       }
@@ -53,13 +54,43 @@ class Main extends Component {
       })
     }
     changeModal(key,val){
-      console.log(123);
       this.setState({
         [key]:val
       })
     }
+    showCreate(){
+      this.changeModal('groupVisible',true);
+      this.refs.groupname.refs.input.value = '';
+    }
+    createGroup(){
+      const {auth,createGroup,getGroup} = this.props;
+      const username = auth.get('username');
+      this.createError = '';
+      this.setState({
+        createError : ''
+      },()=>{
+        createGroup({
+          action:1,
+          username,
+          groupname:this.refs.groupname.refs.input.value
+        }).then(()=>{
+          this.changeModal('groupVisible',false);
+          getGroup(username);
+        }).catch(result=>{
+          if(result.success_id == 1002){
+            this.setState({
+              createError : result.message
+            })
+          }else{
+            this.changeModal('groupVisible',false);
+            message.error('创建失败，请稍后重试')
+          }
+        })
+      })
+    }
     render() {
-      const { showSetting, theme, themeVisible,logoutVisible,groupVisible} = this.state;
+      const { showSetting, theme, themeVisible,logoutVisible,groupVisible,
+        createError} = this.state;
       const { app } = this.props;
       if(!app.get('allGroup')){
         return false;
@@ -80,7 +111,7 @@ class Main extends Component {
                   <div className='setItem'>
                     <Icon type="user-add" style={{ color: '#f1a52f' }} />添加好友
                   </div>
-                  <div className='setItem' onClick={this.changeModal.bind(this,'groupVisible',true)}>
+                  <div className='setItem' onClick={this.showCreate}>
                     <Icon type="usergroup-add" style={{ color: '#5788d9' }} />创建群聊
                   </div>
                   <div className='setItem' onClick={this.changeModal.bind(this,'themeVisible',true)}>
@@ -155,10 +186,17 @@ class Main extends Component {
             您确定要退出吗？
           </Modal>
           <Modal visible={groupVisible} width={455} closable className='groupModal' maskClosable={false}
-            onCancel={this.changeModal.bind(this,'groupVisible',false)} onOk={this.logout}>
+            onCancel={this.changeModal.bind(this,'groupVisible',false)} footer={null}>
             <div>
-              <Input type='text' maxLength={20} />
-
+              <p className='title'>请输入要创建群聊的名称：</p>
+              <Input type='text' maxLength={20} ref='groupname' defaultValue='' 
+                className={createError ? 'error' : ''} onChange={createError ? ()=>this.setState({createError:''}) : null}/>
+              {createError ? <p className='error-msg'>{createError}</p> : null}
+              <div className='footer'>
+                <Button icon="plus" onClick={this.createGroup}>
+                  确认创建
+                </Button>
+              </div>
             </div>
           </Modal>
         </div>
@@ -175,7 +213,8 @@ function mapStateToProps(state) {
 }
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    getGroup
+    getGroup,
+    createGroup
   }, dispatch)
 }
 

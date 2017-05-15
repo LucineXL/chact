@@ -7,7 +7,6 @@ module.exports = function (router, socket) {
     UserModel.findOne({
       'username': req.body.username
     }, (err, user) => {
-      console.log(user)
       if (err) {
         throw err;
       }
@@ -27,7 +26,6 @@ module.exports = function (router, socket) {
         });
       }
     })
-
   })
   // 注册账户
   router.post('/signup', (req, res) => {
@@ -83,7 +81,7 @@ module.exports = function (router, socket) {
             result: {
               message: '认证成功',
               uid: user._id,
-              username:user.username
+              username: user.username
             }
           });
         } else {
@@ -98,21 +96,20 @@ module.exports = function (router, socket) {
     })
   })
   //查找某用户所有的群聊
-  router.post('/getGroup',async(req,res) =>{
+  router.post('/getGroup', async(req, res) => {
     const groups = await UserModel.getUserGroup(req.body.username);
     let groupList = [];
-    if(groups.groups && groups.groups.length){
-      groups.groups.map(value=>{
-        groupList.push({
-          _id:value._id,
-          groupname:value.groupname
+    if (groups.groups && groups.groups.length) {
+      groups
+        .groups
+        .map(value => {
+          groupList.push({_id: value._id, groupname: value.groupname})
+          return groupList;
         })
-        return groupList;
-      })
     }
     return res.json({
-      success:true,
-      result:{
+      success: true,
+      result: {
         group: groupList
       }
     })
@@ -122,29 +119,44 @@ module.exports = function (router, socket) {
     const user = await UserModel.getUser(req.body.username);
     if (user) {
       if (req.body.action == 1) {
-        var newGroup = new GroupModel({groupname: req.body.groupname});
-        try {
-          user
-            .groups
-            .push(newGroup);
-          user.save();
-          newGroup.save();
-          return res.json({
-            success: true,
-            result: {
-              success_id: 1000,
-              message: '新建群聊成功'
+        GroupModel.findOne({
+          'groupname': req.body.groupname
+        }, (err, group) => {
+          if (err) {throw err;}
+          if (!group) {
+            var newGroup = new GroupModel({groupname: req.body.groupname});
+            try {
+              user
+                .groups
+                .push(newGroup);
+              user.save();
+              newGroup.save();
+              return res.json({
+                success: true,
+                result: {
+                  success_id: 1000,
+                  message: '新建群聊成功'
+                }
+              })
+            } catch (err) {
+              return res.json({
+                success: false,
+                result: {
+                  success_id: 2000,
+                  message: '操作失败'
+                }
+              })
             }
-          })
-        } catch (err) {
-          return res.json({
-            success: true,
-            result: {
-              success_id: 2000,
-              message: '操作失败'
-            }
-          })
-        }
+          } else {
+            return res.json({
+              success: false,
+              result: {
+                success_id: 1002,
+                message: '当前群聊已存在'
+              }
+            })
+          }
+        })
       } else {
         try {
           if (user.groups.indexOf(req.body._id) == -1) {
@@ -188,5 +200,4 @@ module.exports = function (router, socket) {
       })
     }
   })
-
 };

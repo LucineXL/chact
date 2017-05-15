@@ -1,39 +1,51 @@
 @import "../../components/Style/foundation";
-.container{
-    .theme1{@include theme(#595F7F,#E3E7EF,#5266D7,#F1F2F6);}
-    .theme2{@include theme(#7F595A,#FFEFE9,#DC8159,#F5F1F0);}
-    .theme3{@include theme(#42354C,#E1D6E9,#9F64A9,#EDE7F2);}
-    .theme4{@include theme(#3D6658,#D4E8D4,#19B983,#EDF4ED);}
-    .theme5{@include theme(#35434C,#4D6778,#0FBA9C,#EEF3F6);}
-    .theme6{@include theme(#1E1F29,#292A39,#2C8DFF,#F1F2F6);}
-    .chart{
-        @include size(100%,100%);
+.container {
+    .theme1 {
+        @include theme(#595F7F, #E3E7EF, #5266D7, #F1F2F6);
+    }
+    .theme2 {
+        @include theme(#7F595A, #FFEFE9, #DC8159, #F5F1F0);
+    }
+    .theme3 {
+        @include theme(#42354C, #E1D6E9, #9F64A9, #EDE7F2);
+    }
+    .theme4 {
+        @include theme(#3D6658, #D4E8D4, #19B983, #EDF4ED);
+    }
+    .theme5 {
+        @include theme(#35434C, #4D6778, #0FBA9C, #EEF3F6);
+    }
+    .theme6 {
+        @include theme(#1E1F29, #292A39, #2C8DFF, #F1F2F6);
+    }
+    .chart {
+        @include size(100%, 100%);
         @include flexbox;
-        .aside{
+        .aside {
             flex: 0 0 60px;
             @include flexbox;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
             padding: 15px 0;
-            .photo{
+            .photo {
                 display: block;
-                @include size(50px,50px);
+                @include size(50px, 50px);
                 border-radius: 50%;
             }
-            .iconfont{
+            .iconfont {
                 display: block;
-                @include size (30px,30px);
+                @include size (30px, 30px);
                 margin-top: 30px;
                 font-size: 30px;
                 line-height: 30px;
                 color: #8a8888;
             }
         }
-        .left{
-          position: relative;
+        .left {
+            position: relative;
             flex: 0 0 240px;
-            .left-title{
+            .left-title {
                 height: 70px;
                 @include flexbox;
                 justify-content: space-between;
@@ -41,24 +53,24 @@
                 padding: 0 20px 0 24px;
                 font-size: 16px;
                 position: relative;
-                .iconfont{
+                .iconfont {
                     display: block;
-                    @include size(30px,30px);
+                    @include size(30px, 30px);
                     line-height: 30px;
                     border-radius: 50%;
                     background: #e3e4eb;
                     cursor: pointer;
-                    &:hover{
-                        background: rgb(202,210,225);
+                    &:hover {
+                        background: rgb(202, 210, 225);
                     }
                 }
-                .setting{
-                    @keyframes mymove{
-                        0%{
-                            top:40px;
+                .setting {
+                    @keyframes mymove {
+                        0% {
+                            top: 40px;
                         }
-                        100%{
-                            top:60px;
+                        100% {
+                            top: 60px;
                         }
                     }
                     @include animation('mymove 0.3s linear');
@@ -68,105 +80,136 @@
                     padding: 10px 15px;
                     background: #fff;
                     font-size: 12px;
-                    box-shadow: 0 3px 14px 0 RGBA(0,0,0,.2);
+                    box-shadow: 0 3px 14px 0 RGBA(0, 0, 0, .2);
                     z-index: 999;
                     border-radius: 4px;
-                    .setItem{
+                    .setItem {
                         height: 20px;
                         line-height: 20px;
-                        cursor:pointer;
-                        .anticon{
+                        cursor: pointer;
+                        .anticon {
                             margin-right: 5px;
                         }
                     }
                 }
             }
-            .search{
-              @include flexbox;
-              margin-bottom: 10px;
-              justify-content: center;
-              align-items: center;
-              .iconfont{
-                @include size(20px,20px);
-                margin-left: 5px;
-                font-size: 20px;
-                color: #d9d9d9;
-              }
-            }
-            .left-main{
-              .list{
-                .item{
-                  padding: 5px 0;
-                  padding-left: 40px !important;
-                  height:40px;
-                  line-height: 30px;
-                  overflow: hidden;
-                  .item-img{
-                      display: block;
-                      float: left;
-                      margin-right: 8px;
-                      @include size(30px,30px);
-                      border-radius: 50%;
-                  }
+            .search {
+                @include flexbox;
+                margin-bottom: 10px;
+                justify-content: center;
+                align-items: center;
+                .iconfont {
+                    @include size(20px, 20px);
+                    margin-left: 5px;
+                    font-size: 20px;
+                    color: #d9d9d9;
                 }
-                .friend-list{
-                  background: transparent;
-                  .ant-menu-submenu > .ant-menu {
-                      background-color: transparent;
-                  }
-                }
-              }
-              .error{
-                margin-top: 200px;
-                text-align: center;
-                color: #8a8888;
-              }
             }
-            .ant-spin{
-              position: absolute;
-              left: 50%;
-              top:50%;
-              margin-left: -10px;
-              margin-left: -10px;
+            .left-main {
+                .list {
+                    .item {
+                        padding: 5px 0;
+                        padding-left: 40px !important;
+                        height: 40px;
+                        line-height: 30px;
+                        overflow: hidden;
+                        .item-img {
+                            display: block;
+                            float: left;
+                            margin-right: 8px;
+                            @include size(30px, 30px);
+                            border-radius: 50%;
+                        }
+                    }
+                    .friend-list {
+                        background: transparent;
+                        .ant-menu-submenu>.ant-menu {
+                            background-color: transparent;
+                        }
+                    }
+                }
+                .error {
+                    margin-top: 200px;
+                    text-align: center;
+                    color: #8a8888;
+                }
+            }
+            .ant-spin {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                margin-left: -10px;
+                margin-left: -10px;
             }
         }
-        .center{
+        .center {
             flex: 1;
         }
     }
 }
-.themeModal{
-    .title{
+
+.themeModal {
+    .title {
         font-size: 16px;
         padding: 10px;
     }
-    .themeBox{
+    .themeBox {
         margin-bottom: 20px;
-        .themeItem{
+        .themeItem {
             display: inline-block;
-            @include size(50px,50px);
+            @include size(50px, 50px);
             margin: 10px;
             line-height: 150px;
             text-align: center;
             color: #333;
             border: 3px solid transparent;
             border-radius: 50%;
-            &:hover,&:active{
+            &:hover,
+            &:active {
                 border: 3px solid #f5be6b;
             }
         }
     }
-    .activeTheme{
+    .activeTheme {
         border: 3px solid #5788d9 !important;
     }
 }
-.logoutModal{
-  .ant-modal-body{
-    padding: 30px;
-    height: 110px;
-    font-size: 16px;
-  }
-  .ant-modal-footer{
-    padding: 20px 16px 20px 10px;
-  }
+
+.logoutModal {
+    .ant-modal-body {
+        padding: 30px;
+        height: 110px;
+        font-size: 16px;
+    }
+    .ant-modal-footer {
+        padding: 20px 16px 20px 10px;
+    }
+}
+
+.groupModal {
+    padding: 20px 30px;
+    .title {
+        height: 30px;
+        line-height: 30px;
+        font-size: 16px;
+    }
+    .ant-input {
+        margin: 20px 0 5px;
+        &.error {
+            background-color: #fff5f7;
+            border: solid 1px #f0d8da;
+        }
+    }
+    .error-msg{
+        font-size: 12px;
+        color: #e61740;
+    }
+    .footer {
+        overflow: hidden;
+        margin: 10px 0;
+        .ant-btn {
+            float: right;
+            background: #1fb71b;
+        }
+    }
 }
