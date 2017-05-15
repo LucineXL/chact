@@ -1,7 +1,7 @@
 import Root from 'containers/Root'
 import Main from 'containers/Root/Main'
 
-import Chact0 from '../components/Views/Chact0'
+import JoinGroup from '../components/Views/JoinGroup'
 import Chact1 from '../components/Views/Chact1'
 import Chact2 from '../components/Views/Chact2'
 export default {
@@ -13,8 +13,8 @@ export default {
     childRoutes:[{
       component: Main,
       childRoutes: [{
-          path: 'chact0',
-          component: Chact0
+          path: 'group',
+          component: JoinGroup
       }, {
           path: 'chact1',
           component: Chact1

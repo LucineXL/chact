@@ -4,14 +4,14 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 // import { test } from 'actions/test';
 
-class Chact0 extends Component {
+class JoinGroup extends Component {
     // componentWillMount() {
     //     this.props.test();
     // }
     render() {
         return (
-            <div>
-                This is Chact0.
+            <div className='group'>
+                
             </div>
         );
     }
@@ -26,4 +26,4 @@ function mapDispatchToProps(dispatch) {
     }, dispatch)
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Chact0)
+export default connect(mapStateToProps, mapDispatchToProps)(JoinGroup)

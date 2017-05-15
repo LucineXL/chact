@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { push } from 'react-router-redux';
 import {Menu,Icon ,Input ,Modal,Spin,Button,message} from 'antd';
-import {getGroup,createGroup} from 'actions/user';
-import Chact from './Chact'
+import {getGroup,createGroup,getGroupByName} from 'actions/user';
+import JoinGroup from 'components/Views/JoinGroup';
 import './style.scss'
 const Search = Input.Search;
 const SubMenu = Menu.SubMenu;
@@ -15,6 +16,7 @@ class Main extends Component {
         this.changeTheme = this.changeTheme.bind(this);
         this.changeModal = this.changeModal.bind(this);
         this.createGroup = this.createGroup.bind(this);
+        this.searchGroup = this.searchGroup.bind(this);
         this.showCreate = this.showCreate.bind(this);
         this.logout = this.logout.bind(this);
         this.state = {
@@ -88,6 +90,13 @@ class Main extends Component {
         })
       })
     }
+    searchGroup(val){
+      this.props.getGroupByName(val).then(result=>{
+        this.props.push('/group')
+      }).catch(result=>{
+        message.error(result.message)
+      })
+    }
     render() {
       const { showSetting, theme, themeVisible,logoutVisible,groupVisible,
         createError} = this.state;
@@ -127,7 +136,7 @@ class Main extends Component {
               }
             </div>
             <div className='search'>
-              <Search placeholder="搜索群聊加入" style={{ width: 200 }} onSearch={value => console.log(value)} />
+              <Search placeholder="搜索群聊加入" style={{ width: 200 }} onSearch={this.searchGroup} />
             </div>
             {
               allGroup.get('loading') ? <Spin /> :
@@ -213,8 +222,10 @@ function mapStateToProps(state) {
 }
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
+    push,
     getGroup,
-    createGroup
+    createGroup,
+    getGroupByName
   }, dispatch)
 }
 

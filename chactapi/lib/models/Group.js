@@ -16,8 +16,8 @@ const GroupSchema = new Schema({
         default: Date.now()
     }
 })
-GroupSchema.statics.getGroup = function(_id) {
-  return this.findById({ _id }).exec();
+GroupSchema.statics.getGroup = function(groupname) {
+  return this.findOne({ groupname }).exec();
 };
 GroupSchema.statics.getGroupMessage = function(groupname) {
   return this.findOne({ groupname })

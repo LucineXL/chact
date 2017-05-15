@@ -3,29 +3,44 @@ const GroupModel = require('./models/Group');
 
 module.exports = function (router, socket) {
   //查询用户名是否存在
-  router.post('/findByName', (req, res) => {
-    UserModel.findOne({
-      'username': req.body.username
-    }, (err, user) => {
-      if (err) {
-        throw err;
-      }
-      if (!user) {
-        return res.json({
-          success: true,
-          result: {
-            isExit: false
+  router.post('/findByName', async (req, res) => {
+    const user = await UserModel.getUser(req.body.username);
+    if (!user) {
+      return res.json({
+        success: true,
+        result: {
+          isExit: false
+        }
+      });
+    } else {
+      return res.json({
+        success: true,
+        result: {
+          isExit: true
+        }
+      });
+    }
+  })
+  //查询群聊是否存在
+  router.post('/groupByName', async (req, res) => {
+    const group = await GroupModel.getGroup(req.body.groupname);
+    if (!group) {
+      return res.json({
+        success: false,
+        result: {
+          message:'您查询的群聊不存在，请检查后重试'
+        }
+      });
+    } else {
+      return res.json({
+        success: true,
+        result: {
+          group:{
+            groupname:group.groupname
           }
-        });
-      } else {
-        return res.json({
-          success: true,
-          result: {
-            isExit: true
-          }
-        });
-      }
-    })
+        }
+      });
+    }
   })
   // 注册账户
   router.post('/signup', (req, res) => {
