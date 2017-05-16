@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 // import { test } from 'actions/test';
 import styles from './style'
 
-class Chact1 extends Component {
+class Chact extends Component {
     // componentWillMount() {
     //     this.props.test();
     // }
@@ -28,4 +28,4 @@ function mapDispatchToProps(dispatch) {
     }, dispatch)
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Chact1)
+export default connect(mapStateToProps, mapDispatchToProps)(Chact)
