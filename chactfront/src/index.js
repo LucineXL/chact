@@ -35,6 +35,9 @@ class App extends Component {
         socket.on('message', (message) => {
             console.log(message);
         })
+        socket.on('systemInfo', (message) => {
+            console.log(message);
+        })
     }
     render() {
         return (

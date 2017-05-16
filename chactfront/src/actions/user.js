@@ -12,6 +12,18 @@ export const REQUEST_CREATEGROUP = 'REQUEST_CREATEGROUP';
 export const REQUEST_CREATEGROUP_SUCCESS = 'REQUEST_CREATEGROUP_SUCCESS';
 export const REQUEST_CREATEGROUP_FAIL = 'REQUEST_CREATEGROUP_FAIL';
 
+export const GET_ACTIVE_GROUP = 'GET_ACTIVE_GROUP';
+
+export function getActiveGroup(index){
+  return (dispatch,getState) =>{
+    const promise = dispatch({
+     type: GET_ACTIVE_GROUP,
+     index
+    })
+    return promise;
+  }
+}
+
 export function getGroup(username){
     return (dispatch,getState) =>{
         const promise = dispatch({

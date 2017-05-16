@@ -7,8 +7,9 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const routes = require('./routes'); //路由配置
 const config = require('./config'); //全局配置
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+const mysocket = require('./socket');
 
 let port = process.env.PORT || 8086;
 //设置跨域访问
@@ -34,15 +35,7 @@ app.use(express.static(path.resolve(__dirname, '../public/'))); // 静态文件
 app.use('/api', router); //路由传入
 routes(router,io);
 io.on('connection', function (socket) {
-    console.log('链接成功');
-    socket.on('login', function () {
-        console.log('登录成功');
-        socket.emit('message','user login');
-    });
-    socket.on('disconnect', function () {
-        console.log('链接断开');
-        socket.emit('message','user disconnected');
-    });
+    mysocket(socket);
 })
 
 mongoose.Promise = global.Promise;

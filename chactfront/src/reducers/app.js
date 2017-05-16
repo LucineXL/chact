@@ -15,6 +15,12 @@ export default (state = Immutable.Map(), action) => {
                 groupByName:result.group
             }))
         }
+        case user.GET_ACTIVE_GROUP:{
+            const {index} = action; 
+            return state.merge(Immutable.fromJS({
+                activeGroup: index
+            }))
+        }
         default: {
             return state;
         }

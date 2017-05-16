@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {push} from 'react-router-redux';
+import socket from 'store/socket';
 import {
   Menu,
   Icon,
@@ -11,7 +12,7 @@ import {
   Button,
   message
 } from 'antd';
-import {getGroup, createGroup, getGroupByName} from 'actions/user';
+import {getGroup, createGroup, getGroupByName,getActiveGroup} from 'actions/user';
 import JoinGroup from 'components/Views/JoinGroup';
 import './style.scss'
 const Search = Input.Search;
@@ -39,7 +40,12 @@ class Main extends Component {
   componentWillMount() {
     const {app, auth, getGroup} = this.props;
     if (auth.size && !app.size) {
-      getGroup(auth.get('username'));
+      getGroup(auth.get('username')).then((result)=>{
+        socket.emit('joinGroup',{
+          groups:result.group,
+          username:auth.get('username')
+        })
+      });
     }
   }
   logout(){
@@ -96,12 +102,12 @@ class Main extends Component {
       })
     })
   }
-  clickGroup(item, key, selectedKeys) {
-    console.log(123);
-    console.log(item);
-    console.log(key);
-    console.log(selectedKeys);
-    //  this.props.push('/chact')
+  clickGroup(push,item) {
+    push('/chact');
+    if(item.key.slice(0,5) == 'group'){
+      this.props.getActiveGroup(parseInt(item.key.slice(5)))
+    }
+    
   }
   searchGroup(val) {
     this.props.getGroupByName(val).then(result => {
@@ -119,7 +125,7 @@ class Main extends Component {
       groupVisible,
       createError
     } = this.state;
-    const {app} = this.props;
+    const {app ,push} = this.props;
     if (!app.get('allGroup')) {
       return false;
     }
@@ -161,7 +167,7 @@ class Main extends Component {
           {allGroup.get('loading') ? <Spin/>: <div className='left-main'>
               {allGroup.get('success')
               ? <div className='list'>
-                    <Menu className='friend-list' defaultOpenKeys={['group']} mode="inline">
+                    <Menu className='friend-list' defaultOpenKeys={['group']} mode="inline" onSelect={this.clickGroup.bind(this,push)}>
                       <SubMenu key="sub1" title={<span>我的好友</span>}>
                         <Menu.Item key="5" className='item'>
                           <img src={img} className='item-img'/>
@@ -172,9 +178,9 @@ class Main extends Component {
                           <p>admin</p>
                         </Menu.Item>
                       </SubMenu>
-                      <SubMenu key="group" title={<span> 我的群聊 </span>} onSelect={this.clickGroup}>
+                      <SubMenu key="group" title={<span> 我的群聊 </span>}>
                         {allGroup.get('group').size && allGroup.get('group').map((value, index) => {
-                            return <Menu.Item key={`group${index}`} className='item' onSelect={this.clickGroup}>
+                            return <Menu.Item key={`group${index}`} className='item'>
                               {value.get('groupname')}</Menu.Item>
                           })
                         }
@@ -238,7 +244,8 @@ function mapDispatchToProps(dispatch) {
     push,
     getGroup,
     createGroup,
-    getGroupByName
+    getGroupByName,
+    getActiveGroup
   }, dispatch)
 }
 
