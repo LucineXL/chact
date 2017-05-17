@@ -32,12 +32,12 @@ class App extends Component {
           console.log('duankai');
             sessionStorage.clear();
         })
-        socket.on('message', (message) => {
-            console.log(message);
-        })
         socket.on('systemInfo', (message) => {
             console.log(message);
         })
+        // socket.on('message', (message) => {
+        //     console.log(message)
+        // })
     }
     render() {
         return (

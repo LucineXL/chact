@@ -171,7 +171,8 @@ export const changeToTimeSecond = (data) => {
   return Y + M + D + h + m + s;
 }
 export const changeToTimeMMDDHHMM = (data) => {
-  let date = new Date(data * 1000);
+  // let date = new Date(data * 1000);
+  let date = new Date(data);
   let M = (date.getMonth() + 1) + '.';
   let D = date.getDate() + ' ';
   let h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';

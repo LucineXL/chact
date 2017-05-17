@@ -26,7 +26,7 @@ module.exports = function (socket) {
                 group.messages.push(newMessage);
                 group.save();
                 newMessage.save();
-                socket.broadcast.to('groupname').emit('message', newMessage);
+                socket.broadcast.to(groupname).emit('message', req);
             }catch (err){
                 console.log(err);
             }

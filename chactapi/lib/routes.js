@@ -1,5 +1,6 @@
 const UserModel = require('./models/User');
 const GroupModel = require('./models/Group');
+const MessageModel = require('./models/Message');
 
 module.exports = function (router, socket) {
   //查询用户名是否存在
@@ -113,15 +114,13 @@ module.exports = function (router, socket) {
   })
   //查找某用户所有的群聊
   router.post('/getGroup', async(req, res) => {
-    const groups = await UserModel.getUserGroup(req.body.username);
+    const groups = await UserModel.getUserMessage(req.body.username);
     let groupList = [];
     if (groups.groups && groups.groups.length) {
-      groups
-        .groups
-        .map(value => {
-          groupList.push({_id: value._id, groupname: value.groupname})
-          return groupList;
-        })
+      groups.groups.map(value => { 
+        groupList.push({_id: value._id, groupname: value.groupname,message:value.messages})
+        return groupList;
+      })
     }
     return res.json({
       success: true,

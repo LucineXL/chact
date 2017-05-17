@@ -12,7 +12,7 @@ import {
   Button,
   message
 } from 'antd';
-import {getGroup, createGroup, getGroupByName,getActiveGroup} from 'actions/user';
+import {getGroup, createGroup, getGroupByName,getActiveGroup,reqSendMessage} from 'actions/user';
 import JoinGroup from 'components/Views/JoinGroup';
 import './style.scss'
 const Search = Input.Search;
@@ -28,6 +28,9 @@ class Main extends Component {
     this.searchGroup = this.searchGroup.bind(this);
     this.showCreate = this.showCreate.bind(this);
     this.logout = this.logout.bind(this);
+
+
+    this.getGroupIndex = this.getGroupIndex.bind(this);
     this.state = {
       showSetting: false,
       themeVisible: false,
@@ -38,7 +41,7 @@ class Main extends Component {
     };
   }
   componentWillMount() {
-    const {app, auth, getGroup} = this.props;
+    const {app, auth,allGroup, getGroup} = this.props;
     if (auth.size && !app.size) {
       getGroup(auth.get('username')).then((result)=>{
         socket.emit('joinGroup',{
@@ -47,6 +50,23 @@ class Main extends Component {
         })
       });
     }
+  }
+  componentDidMount(){
+    socket.on('message', (message) => {
+        this.getGroupIndex(message);
+    })
+  }
+  getGroupIndex(message){
+    const {app, auth,allGroup,reqSendMessage} = this.props;
+    const {content,groupname,timestamp,type,user} = message;
+    const gidx = allGroup.findIndex(item=>item.get('groupname')== message.groupname)
+      console.log(gidx);
+      reqSendMessage({
+        gidx,
+        message:{
+          content,timestamp,type,user
+        }
+      })
   }
   logout(){
     sessionStorage.removeItem('auth');
@@ -237,7 +257,8 @@ class Main extends Component {
 function mapStateToProps(state) {
   const auth = state.get('auth');
   const app = state.get('app');
-  return {auth, app}
+  const allGroup = app.getIn(['allGroup','group']);
+  return {auth, app,allGroup}
 }
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
@@ -245,7 +266,8 @@ function mapDispatchToProps(dispatch) {
     getGroup,
     createGroup,
     getGroupByName,
-    getActiveGroup
+    getActiveGroup,
+    reqSendMessage
   }, dispatch)
 }
 

@@ -21,6 +21,14 @@ export default (state = Immutable.Map(), action) => {
                 activeGroup: index
             }))
         }
+        case user.REQUEST_SENDMESSAGE:{
+            const {gidx,message} = action.query;
+            let messages = state.getIn(['allGroup','group',gidx,'message']).toJS();
+            messages.push(message);
+            return state.updateIn(['allGroup','group',gidx],value=>{
+                return value.merge(Immutable.fromJS({'message':messages}))
+            })
+        }
         default: {
             return state;
         }

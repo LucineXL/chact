@@ -42,12 +42,13 @@ UserSchema.statics.getUserMessage = function(username) {
     populate: {
       path: 'messages',
       options: {
-        sort: { _id: -1 },
+        sort: { _id: 1 },
         limit: 30,
       },
       populate: {
         path: 'user',
-      },
+        select: 'username avatar',
+      }
     },
   });
 };
