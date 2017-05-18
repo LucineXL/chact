@@ -29,6 +29,19 @@ export default (state = Immutable.Map(), action) => {
                 return value.merge(Immutable.fromJS({'message':messages}))
             })
         }
+        case user.SET_MESSAGE_NUM:{
+            const {count,gidx} = action.query;
+            return state.updateIn(['allGroup','group',gidx],value=>{
+                return value.merge(Immutable.fromJS({'noRead':count}))
+            })
+        }
+        case user.REQUEST_GETUSERINFO:
+        case user.REQUEST_GETUSERINFO_SUCCESS:
+        case user.REQUEST_GETUSERINFO_FAIL:{
+            return state.merge(Immutable.fromJS({
+                userInfo:result
+            }))
+        }
         default: {
             return state;
         }

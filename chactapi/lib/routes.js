@@ -22,6 +22,29 @@ module.exports = function (router, socket) {
       });
     }
   })
+  //查询用户信息
+  router.post('/getUserInfo',async (req,res)=>{
+    const user = await UserModel.getUser(req.body.username);
+    const {username,sex,birthday,email} = user;
+    if (!user) {
+      return res.json({
+        success: false,
+        result: ''
+      });
+    } else {
+      return res.json({
+        success: true,
+        result: {
+          user: {
+            'username':username,
+            'sex':sex,
+            'birthday':birthday,
+            'email':email
+          }
+        }
+      });
+    }
+  })
   //查询群聊是否存在
   router.post('/groupByName', async (req, res) => {
     const group = await GroupModel.getGroup(req.body.groupname);
@@ -118,7 +141,7 @@ module.exports = function (router, socket) {
     let groupList = [];
     if (groups.groups && groups.groups.length) {
       groups.groups.map(value => { 
-        groupList.push({_id: value._id, groupname: value.groupname,message:value.messages})
+        groupList.push({_id: value._id, groupname: value.groupname,message:value.messages.reverse()})
         return groupList;
       })
     }

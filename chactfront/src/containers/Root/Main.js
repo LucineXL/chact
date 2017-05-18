@@ -10,9 +10,10 @@ import {
   Modal,
   Spin,
   Button,
-  message
+  message,
+  Badge 
 } from 'antd';
-import {getGroup, createGroup, getGroupByName,getActiveGroup,reqSendMessage} from 'actions/user';
+import {getGroup, createGroup, getGroupByName,getActiveGroup,reqSendMessage,setMessageNum} from 'actions/user';
 import JoinGroup from 'components/Views/JoinGroup';
 import './style.scss'
 const Search = Input.Search;
@@ -57,16 +58,22 @@ class Main extends Component {
     })
   }
   getGroupIndex(message){
-    const {app, auth,allGroup,reqSendMessage} = this.props;
+    const {app, auth,activeGroup,allGroup,reqSendMessage,setMessageNum} = this.props;
     const {content,groupname,timestamp,type,user} = message;
-    const gidx = allGroup.findIndex(item=>item.get('groupname')== message.groupname)
-      console.log(gidx);
-      reqSendMessage({
+    const gidx = allGroup.findIndex(item=>item.get('groupname')== message.groupname);
+    const noRead = allGroup.getIn([gidx,'noRead']) ? allGroup.getIn([gidx,'noRead']) : 0;
+    reqSendMessage({
+      gidx,
+      message:{
+        content,timestamp,type,user
+      }
+    })
+    if(activeGroup != gidx){
+      setMessageNum({
         gidx,
-        message:{
-          content,timestamp,type,user
-        }
+        count: parseInt(noRead)+1
       })
+    }
   }
   logout(){
     sessionStorage.removeItem('auth');
@@ -123,9 +130,15 @@ class Main extends Component {
     })
   }
   clickGroup(push,item) {
+    const { getActiveGroup, setMessageNum } = this.props;
+    const gidx = parseInt(item.key.slice(5));
     push('/chact');
     if(item.key.slice(0,5) == 'group'){
-      this.props.getActiveGroup(parseInt(item.key.slice(5)))
+      getActiveGroup(parseInt(gidx));
+      setMessageNum({
+        gidx,
+        count: 0
+      })
     }
     
   }
@@ -201,7 +214,9 @@ class Main extends Component {
                       <SubMenu key="group" title={<span> 我的群聊 </span>}>
                         {allGroup.get('group').size && allGroup.get('group').map((value, index) => {
                             return <Menu.Item key={`group${index}`} className='item'>
-                              {value.get('groupname')}</Menu.Item>
+                              {value.get('groupname')}
+                              {value.get('noRead') ? <Badge count={value.get('noRead')} /> : ''}
+                            </Menu.Item>
                           })
                         }
                       </SubMenu>
@@ -258,7 +273,8 @@ function mapStateToProps(state) {
   const auth = state.get('auth');
   const app = state.get('app');
   const allGroup = app.getIn(['allGroup','group']);
-  return {auth, app,allGroup}
+  const activeGroup = app.get('activeGroup');
+  return {auth, app,allGroup,activeGroup}
 }
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
@@ -267,7 +283,8 @@ function mapDispatchToProps(dispatch) {
     createGroup,
     getGroupByName,
     getActiveGroup,
-    reqSendMessage
+    reqSendMessage,
+    setMessageNum
   }, dispatch)
 }
 

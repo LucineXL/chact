@@ -120,6 +120,15 @@
                             @include size(30px, 30px);
                             border-radius: 50%;
                         }
+                        .ant-badge{
+                            position: absolute;
+                            left: 70px;
+                            top:10px;
+                            .ant-badge-count{
+                                background: #87d068;
+                            }
+                            
+                        }
                     }
                     .friend-list {
                         background: transparent;
@@ -199,6 +208,7 @@
                                 color: #9e9e9e;
                                 border-radius: 50%;
                                 background:#e3e7ef;
+                                cursor:pointer;
                             }
                             .main{
                                 float: left;
@@ -348,5 +358,22 @@
             color: #fff;
             background: #1fb71b;
         }
+    }
+}
+.card{
+    .cardItem{
+        height: 25px;
+        line-height: 25px;
+        .anticon-woman{
+            color: #ea6fe4;
+        }
+        .anticon-man{
+            color: #2425ef;
+        }
+    }
+    .ant-btn{
+        margin: 10px 0;
+        background: #1fb71b;
+        color: #fff;
     }
 }

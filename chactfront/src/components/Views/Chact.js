@@ -3,14 +3,15 @@ import CSSModules from 'react-css-modules';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {changeToTimeMMDDHHMM} from 'utils/moment';
-import {reqSendMessage} from 'actions/user';
-import {Icon} from 'antd';
+import {reqSendMessage , getUserInfo} from 'actions/user';
+import {Icon,Popover,Spin,Button} from 'antd';
 import socket from 'store/socket';
 
 class Chact extends Component {
    constructor(props){
         super(props);
         this.textChange = this.textChange.bind(this);
+        this.userInfo = this.userInfo.bind(this);
     }
     componentDidMount(){
         this.refs.message.scrollTop = this.refs.message.scrollHeight -this.refs.message.clientHeight;
@@ -38,13 +39,25 @@ class Chact extends Component {
                 },0)
                 this.refs.message.scrollTop =  this.refs.message.scrollHeight -this.refs.message.clientHeight;
             socket.emit('sendMessage',Object.assign(message,{groupname:activeGroup.get('groupname')}));
-            
         }
     }
+    userInfo(username){
+        const { getUserInfo } = this.props;
+        getUserInfo(username);
+    }
     render() {
-        const {activeGroup,auth} = this.props;
+        const {userInfo,activeGroup,auth,getUserInfo} = this.props;
         const uid = auth.get('uid');
         const message = activeGroup.get('message');
+        const user = userInfo && userInfo.get('user') ? userInfo.get('user') : '';
+        const content = userInfo ? <div className='card'>
+            {userInfo.get('loading') ? <Spin />:<div className='cardInfo'>
+                <p className='cardItem'>{user.get('username')} <Icon type={user.get('sex')=='男' ? 'man' : 'woman'}/></p>
+                <p className='cardItem'>电话：{user.get('phone') ? user.get('phone') : '该用户暂未绑定'}</p>
+                <p className='cardItem'>email：{user.get('email') ? user.get('email') : '该用户暂未绑定'}</p>
+                <Button>发消息</Button>
+            </div>}
+        </div> : ''
         return (
             <div className='chactBox'>
                 <header className='header'>{activeGroup.get('groupname')}</header>
@@ -56,7 +69,9 @@ class Chact extends Component {
                                 const username = value.getIn(['user','username']);
                                 const id = value.getIn(['user','_id']);
                                 return <div className={`messageItem ${uid== id?'mine':'other'}`} key={`message${index}`}>
-                                    <div className='photo'>{username.slice(0,1)}</div>
+                                    <Popover content={content} title='资料' trigger="click">
+                                        <div className='photo' onClick={this.userInfo.bind(this,username)}>{username.slice(0,1)}</div>
+                                    </Popover>
                                     <div className='main'>
                                         <div className='user'>
                                             <div className='name'>{username}</div>
@@ -84,12 +99,14 @@ function mapStateToProps(state) {
     const auth = state.get('auth');
     const allGroup = app.getIn(['allGroup','group']);
     const activeIndex = app.get('activeGroup');
+    const userInfo = app.get('userInfo');
     const activeGroup = app.getIn(['allGroup','group',activeIndex]);
-    return { auth ,app ,allGroup ,activeIndex ,activeGroup }
+    return { auth ,app ,allGroup ,activeIndex ,activeGroup,userInfo}
 }
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-        reqSendMessage
+        reqSendMessage,
+        getUserInfo
     }, dispatch)
 }
 
