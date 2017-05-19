@@ -4,13 +4,12 @@ const MessageModel = require('./models/Message');
 
 module.exports = function (socket) {
     console.log('链接成功');
-    socket.on('login', function () {
+    socket.on('login', function (req) {
         console.log('登录成功');
-        socket.emit('message','user login');
+        socket.broadcast.emit('systemInfo',`${req.username}上线了~`);
     });
     socket.on('disconnect', function () {
         console.log('链接断开');
-        socket.emit('message','user disconnected');
     });
     socket.on('sendMessage',async(req)=>{
         const {groupname,timestamp,user,type,content} = req;
@@ -23,10 +22,15 @@ module.exports = function (socket) {
                 content
             });
             try{
-                group.messages.push(newMessage);
-                group.save();
-                newMessage.save();
-                socket.broadcast.to(groupname).emit('message', req);
+                if(type == 1){
+                    group.messages.push(newMessage);
+                    group.save();
+                    newMessage.save();
+                    socket.broadcast.to(groupname).emit('message', req);
+                }else{
+
+                }
+                
             }catch (err){
                 console.log(err);
             }
@@ -36,7 +40,7 @@ module.exports = function (socket) {
         const {username,groups} = req;
         groups.map((value,index)=>{
             socket.join(value.groupname);
-            socket.emit('systemInfo',`${username}加入群聊${value.groupname}`);
+           // socket.emit('systemInfo',`${username}加入群聊${value.groupname}`);
         })
     })
 }

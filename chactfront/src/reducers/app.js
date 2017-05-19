@@ -16,19 +16,27 @@ export default (state = Immutable.Map(), action) => {
                 groupByName:result.group
             }))
         }
-        case user.GET_ACTIVE_GROUP:{
-            const {index} = action; 
+        case user.GET_ACTIVE:{
+            const {query} = action; 
             return state.merge(Immutable.fromJS({
-                activeGroup: index
+                activeItem: query
             }))
         }
         case user.REQUEST_SENDMESSAGE:{
             const {gidx,message} = action.query;
-            let messages = state.getIn(['allGroup','group',gidx,'message']).toJS();
-            messages.push(message);
-            return state.updateIn(['allGroup','group',gidx],value=>{
-                return value.merge(Immutable.fromJS({'message':messages}))
-            })
+            if(message.type == 1){
+                let messages = state.getIn(['allGroup','group',gidx,'message']).toJS();
+                messages.push(message);
+                return state.updateIn(['allGroup','group',gidx],value=>{
+                    return value.merge(Immutable.fromJS({'message':messages}))
+                })
+            }else{
+                let messages = state.getIn(['myChact',gidx,'message']).toJS();
+                messages.push(message);
+                return state.updateIn(['myChact',gidx],value=>{
+                    return value.merge(Immutable.fromJS({'message':messages}))
+                })
+            }
         }
         case user.SET_MESSAGE_NUM:{
             const {count,gidx} = action.query;

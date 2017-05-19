@@ -16,16 +16,16 @@ export const REQUEST_GETUSERINFO = 'REQUEST_GETUSERINFO';
 export const REQUEST_GETUSERINFO_SUCCESS = 'REQUEST_GETUSERINFO_SUCCESS';
 export const REQUEST_GETUSERINFO_FAIL = 'REQUEST_GETUSERINFO_FAIL';
 
-export const GET_ACTIVE_GROUP = 'GET_ACTIVE_GROUP';
+export const GET_ACTIVE = 'GET_ACTIVE';
 export const REQUEST_SENDMESSAGE = 'REQUEST_SENDMESSAGE';
 export const SET_MESSAGE_NUM = 'SET_MESSAGE_NUM';
 export const CREATE_SPE_CHACT = 'CREATE_SPE_CHACT';
 
-export function getActiveGroup(index){
+export function setActive(query){
   return (dispatch,getState) =>{
     const promise = dispatch({
-     type: GET_ACTIVE_GROUP,
-     index
+     type: GET_ACTIVE,
+     query
     })
     return promise;
   }

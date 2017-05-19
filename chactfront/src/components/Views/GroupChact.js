@@ -7,7 +7,7 @@ import {reqSendMessage , getUserInfo,createSpeChact} from 'actions/user';
 import {Icon,Popover,Spin,Button} from 'antd';
 import socket from 'store/socket';
 
-class Chact extends Component {
+class GroupChact extends Component {
    constructor(props){
         super(props);
         this.textChange = this.textChange.bind(this);
@@ -18,11 +18,11 @@ class Chact extends Component {
         this.refs.message.scrollTop = this.refs.message.scrollHeight -this.refs.message.clientHeight;
     }
     textChange(e){
-        const {auth,activeIndex,activeGroup,reqSendMessage} = this.props;
+        const {auth,activeIndex,activeKey,activeGroup,reqSendMessage} = this.props;
         const message = {
             timestamp:new Date().getTime(),
             user:auth.get('uid'),
-            type:1,
+            type: activeKey=='group' ? 1 : 2,
             content:this.refs.textarea.value,
             user:{
                 '_id':auth.get('uid'),
@@ -34,11 +34,10 @@ class Chact extends Component {
                 gidx:activeIndex,
                 message
             })
-                this.refs.textarea.value = '';
-                setTimeout(()=>{
-                    this.refs.message.scrollTop =  this.refs.message.scrollHeight - this.refs.message.clientHeight;
-                },0)
-                this.refs.message.scrollTop =  this.refs.message.scrollHeight -this.refs.message.clientHeight;
+            this.refs.textarea.value = '';
+            setTimeout(()=>{
+                this.refs.message.scrollTop =  this.refs.message.scrollHeight - this.refs.message.clientHeight;
+            },0)
             socket.emit('sendMessage',Object.assign(message,{groupname:activeGroup.get('groupname')}));
         }
     }
@@ -54,7 +53,7 @@ class Chact extends Component {
         
     }
     render() {
-        const {userInfo,activeGroup,auth,getUserInfo} = this.props;
+        const {userInfo,activekey,activeGroup,activeIndex,auth,getUserInfo} = this.props;
         const uid = auth.get('uid');
         const message = activeGroup.get('message');
         const user = userInfo && userInfo.get('user') ? userInfo.get('user') : '';
@@ -63,14 +62,14 @@ class Chact extends Component {
                 <p className='cardItem'>{user.get('username')} <Icon type={user.get('sex')=='男' ? 'man' : 'woman'}/></p>
                 <p className='cardItem'>电话：{user.get('phone') ? user.get('phone') : '该用户暂未绑定'}</p>
                 <p className='cardItem'>email：{user.get('email') ? user.get('email') : '该用户暂未绑定'}</p>
-                <Button onClick={this.createChact.bind(this,user)}>发消息</Button>
+                {activekey!=='group' ?<Button onClick={this.createChact.bind(this,user)}>发消息</Button>:''}
             </div>}
         </div> : ''
         return (
             <div className='chactBox'>
-                <header className='header'>{activeGroup.get('groupname')}</header>
+                <header className='header'>{activekey=='group'?activeGroup.get('groupname'):activeGroup.get('username')}</header>
                 <div className='main'>
-                    <p className='info'>本群聊当前在线人数 ： 10</p>
+                    {activekey=='group' ? <p className='info'>本群聊当前在线人数 ： 10</p> : ''}
                     <div className='message' ref='message'>
                         {
                             message.map((value,index)=>{
@@ -107,10 +106,11 @@ function mapStateToProps(state) {
     const auth = state.get('auth');
     const myChact = app.get('myChact');
     const allGroup = app.getIn(['allGroup','group']);
-    const activeIndex = app.get('activeGroup');
+    const activeKey = app.getIn(['activeItem','key']);
+    const activeIndex = app.getIn(['activeItem','value']);
     const userInfo = app.get('userInfo');
-    const activeGroup = app.getIn(['allGroup','group',activeIndex]);
-    return { auth ,app ,myChact ,allGroup ,activeIndex ,activeGroup,userInfo}
+    const activeGroup =  activeKey=='group' ? app.getIn(['allGroup','group',activeIndex]) : app.getIn(['myChact',activeIndex]);
+    return { auth ,app ,myChact ,allGroup ,activeKey ,activeIndex ,userInfo,activeGroup}
 }
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
@@ -120,4 +120,4 @@ function mapDispatchToProps(dispatch) {
     }, dispatch)
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Chact)
+export default connect(mapStateToProps, mapDispatchToProps)(GroupChact)

@@ -13,7 +13,7 @@ import {
   message,
   Badge 
 } from 'antd';
-import {getGroup, createGroup, getGroupByName,getActiveGroup,reqSendMessage,setMessageNum} from 'actions/user';
+import {getGroup, createGroup, getGroupByName,setActive,reqSendMessage,setMessageNum} from 'actions/user';
 import JoinGroup from 'components/Views/JoinGroup';
 import './style.scss'
 const Search = Input.Search;
@@ -56,9 +56,12 @@ class Main extends Component {
     socket.on('message', (message) => {
         this.getGroupIndex(message);
     })
+    socket.on('systemInfo', (systemInfo) => {
+      message.info(systemInfo);
+    })
   }
   getGroupIndex(message){
-    const {app, auth,activeGroup,allGroup,reqSendMessage,setMessageNum} = this.props;
+    const {app, auth,activeItem,allGroup,reqSendMessage,setMessageNum} = this.props;
     const {content,groupname,timestamp,type,user} = message;
     const gidx = allGroup.findIndex(item=>item.get('groupname')== message.groupname);
     const noRead = allGroup.getIn([gidx,'noRead']) ? allGroup.getIn([gidx,'noRead']) : 0;
@@ -68,7 +71,7 @@ class Main extends Component {
         content,timestamp,type,user
       }
     })
-    if(activeGroup != gidx){
+    if(activeItem.get('key') == 'group' && activeItem.get('value') != gidx){
       setMessageNum({
         gidx,
         count: parseInt(noRead)+1
@@ -130,15 +133,17 @@ class Main extends Component {
     })
   }
   clickGroup(push,item) {
-    const { getActiveGroup, setMessageNum } = this.props;
+    const {allGroup,myChact, setActive, setMessageNum } = this.props;
     const gidx = parseInt(item.key.slice(5));
-    push('/chact');
+    setActive({'key':item.key.slice(0,5),'value':gidx});
     if(item.key.slice(0,5) == 'group'){
-      getActiveGroup(parseInt(gidx));
       setMessageNum({
         gidx,
         count: 0
       })
+      push(`/chact/${allGroup.getIn([gidx,'_id'])}`);
+    }else{
+      push(`/chact/${myChact.getIn([gidx,'_id'])}`);
     }
     
   }
@@ -275,8 +280,8 @@ function mapStateToProps(state) {
   const app = state.get('app');
   const myChact = app.get('myChact');
   const allGroup = app.getIn(['allGroup','group']);
-  const activeGroup = app.get('activeGroup');
-  return {auth, app, myChact, allGroup,activeGroup}
+  const activeItem = app.get('activeItem');
+  return {auth, app, myChact, allGroup,activeItem}
 }
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
@@ -284,7 +289,7 @@ function mapDispatchToProps(dispatch) {
     getGroup,
     createGroup,
     getGroupByName,
-    getActiveGroup,
+    setActive,
     reqSendMessage,
     setMessageNum
   }, dispatch)

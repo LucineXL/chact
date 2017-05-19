@@ -2,7 +2,7 @@ import Root from 'containers/Root'
 import Main from 'containers/Root/Main'
 
 import JoinGroup from '../components/Views/JoinGroup'
-import Chact from '../components/Views/Chact'
+import GroupChact from '../components/Views/GroupChact'
 export default {
     path: '/',
     component: Root,
@@ -15,8 +15,8 @@ export default {
           path: 'group',
           component: JoinGroup
       }, {
-          path: 'chact',
-          component: Chact
+          path: 'chact/:id',
+          component: GroupChact
       }]
     }]
 }

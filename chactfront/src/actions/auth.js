@@ -52,9 +52,7 @@ export function requestLogin(query){
               uid:result.uid,
               username:result.username
             });
-            socket.emit('login',()=>{
-                console.log('登录成功')
-            })
+            socket.emit('login',{'username':result.username});
         })
         return promise;
     }
