@@ -158,7 +158,7 @@ class Main extends Component {
       groupVisible,
       createError
     } = this.state;
-    const {app ,push} = this.props;
+    const {app ,myChact,push} = this.props;
     if (!app.get('allGroup')) {
       return false;
     }
@@ -200,16 +200,17 @@ class Main extends Component {
           {allGroup.get('loading') ? <Spin/>: <div className='left-main'>
               {allGroup.get('success')
               ? <div className='list'>
-                    <Menu className='friend-list' defaultOpenKeys={['group']} mode="inline" onSelect={this.clickGroup.bind(this,push)}>
-                      <SubMenu key="sub1" title={<span>我的好友</span>}>
-                        <Menu.Item key="5" className='item'>
-                          <img src={img} className='item-img'/>
-                          <p>admin</p>
-                        </Menu.Item>
-                        <Menu.Item key="6" className='item'>
-                          <img src={img} className='item-img'/>
-                          <p>admin</p>
-                        </Menu.Item>
+                    <Menu className='friend-list' defaultOpenKeys={['group','chact']} mode="inline" onSelect={this.clickGroup.bind(this,push)}>
+                      <SubMenu key="chact" title={<span>我的聊天</span>}>
+                      {
+                        myChact.size && myChact.map((value,index)=>{
+                          const username = value.get('username');
+                          return <Menu.Item key={`chact${index}`} className='item'>
+                            <div className='photo'>{username.slice(0,1)}</div>
+                            <p>{username}</p>
+                          </Menu.Item>
+                        })
+                      }
                       </SubMenu>
                       <SubMenu key="group" title={<span> 我的群聊 </span>}>
                         {allGroup.get('group').size && allGroup.get('group').map((value, index) => {
@@ -272,9 +273,10 @@ class Main extends Component {
 function mapStateToProps(state) {
   const auth = state.get('auth');
   const app = state.get('app');
+  const myChact = app.get('myChact');
   const allGroup = app.getIn(['allGroup','group']);
   const activeGroup = app.get('activeGroup');
-  return {auth, app,allGroup,activeGroup}
+  return {auth, app, myChact, allGroup,activeGroup}
 }
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({

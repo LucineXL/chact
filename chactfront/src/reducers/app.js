@@ -7,7 +7,8 @@ export default (state = Immutable.Map(), action) => {
         case user.REQUEST_GETGROUP_FAIL:
         {
             return state.merge(Immutable.fromJS({
-              allGroup:result
+              allGroup:result,
+              myChact:[]
             }));
         }
         case user.REQUEST_GROUPBYNAME_SUCCESS:{
@@ -41,6 +42,14 @@ export default (state = Immutable.Map(), action) => {
             return state.merge(Immutable.fromJS({
                 userInfo:result
             }))
+        }
+        case user.CREATE_SPE_CHACT:{
+            const {query} = action;
+            let myChact = state.get('myChact').toJS();
+            myChact.push(Object.assign(query,{message:[]}));
+            return state.update('myChact',value=>{
+                return value.merge(Immutable.fromJS(myChact))
+            })
         }
         default: {
             return state;

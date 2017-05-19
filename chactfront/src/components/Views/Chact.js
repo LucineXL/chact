@@ -3,7 +3,7 @@ import CSSModules from 'react-css-modules';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {changeToTimeMMDDHHMM} from 'utils/moment';
-import {reqSendMessage , getUserInfo} from 'actions/user';
+import {reqSendMessage , getUserInfo,createSpeChact} from 'actions/user';
 import {Icon,Popover,Spin,Button} from 'antd';
 import socket from 'store/socket';
 
@@ -12,6 +12,7 @@ class Chact extends Component {
         super(props);
         this.textChange = this.textChange.bind(this);
         this.userInfo = this.userInfo.bind(this);
+        this.createChact = this.createChact.bind(this);
     }
     componentDidMount(){
         this.refs.message.scrollTop = this.refs.message.scrollHeight -this.refs.message.clientHeight;
@@ -45,6 +46,13 @@ class Chact extends Component {
         const { getUserInfo } = this.props;
         getUserInfo(username);
     }
+    createChact(user){
+        const {myChact, createSpeChact} = this.props;
+        if(myChact.findIndex(item=>item.get('_id')==user.get('_id')) == -1){
+            createSpeChact({'_id':user.get('_id'),'username':user.get('username')})
+        }
+        
+    }
     render() {
         const {userInfo,activeGroup,auth,getUserInfo} = this.props;
         const uid = auth.get('uid');
@@ -55,7 +63,7 @@ class Chact extends Component {
                 <p className='cardItem'>{user.get('username')} <Icon type={user.get('sex')=='男' ? 'man' : 'woman'}/></p>
                 <p className='cardItem'>电话：{user.get('phone') ? user.get('phone') : '该用户暂未绑定'}</p>
                 <p className='cardItem'>email：{user.get('email') ? user.get('email') : '该用户暂未绑定'}</p>
-                <Button>发消息</Button>
+                <Button onClick={this.createChact.bind(this,user)}>发消息</Button>
             </div>}
         </div> : ''
         return (
@@ -97,16 +105,18 @@ class Chact extends Component {
 function mapStateToProps(state) {
     const app = state.get('app');
     const auth = state.get('auth');
+    const myChact = app.get('myChact');
     const allGroup = app.getIn(['allGroup','group']);
     const activeIndex = app.get('activeGroup');
     const userInfo = app.get('userInfo');
     const activeGroup = app.getIn(['allGroup','group',activeIndex]);
-    return { auth ,app ,allGroup ,activeIndex ,activeGroup,userInfo}
+    return { auth ,app ,myChact ,allGroup ,activeIndex ,activeGroup,userInfo}
 }
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
         reqSendMessage,
-        getUserInfo
+        getUserInfo,
+        createSpeChact
     }, dispatch)
 }
 

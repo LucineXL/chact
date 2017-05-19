@@ -25,7 +25,7 @@ module.exports = function (router, socket) {
   //查询用户信息
   router.post('/getUserInfo',async (req,res)=>{
     const user = await UserModel.getUser(req.body.username);
-    const {username,sex,birthday,email} = user;
+    const {_id,username,sex,birthday,email} = user;
     if (!user) {
       return res.json({
         success: false,
@@ -36,6 +36,7 @@ module.exports = function (router, socket) {
         success: true,
         result: {
           user: {
+            '_id':_id,
             'username':username,
             'sex':sex,
             'birthday':birthday,
