@@ -11,9 +11,9 @@ import {
   Spin,
   Button,
   message,
-  Badge 
+  Badge
 } from 'antd';
-import {getGroup, createGroup, getGroupByName,setActive,reqSendMessage,setMessageNum} from 'actions/user';
+import {getGroup, createGroup, getGroupByName,setActive,reqSendMessage,setMessageNum,setDeleteGroup} from 'actions/user';
 import JoinGroup from 'components/Views/JoinGroup';
 import './style.scss'
 const Search = Input.Search;
@@ -28,11 +28,12 @@ class Main extends Component {
     this.createGroup = this.createGroup.bind(this);
     this.searchGroup = this.searchGroup.bind(this);
     this.showCreate = this.showCreate.bind(this);
+    this.deleteGroup = this.deleteGroup.bind(this);
     this.logout = this.logout.bind(this);
-
 
     this.getGroupIndex = this.getGroupIndex.bind(this);
     this.state = {
+      deleteVisible:false,
       showSetting: false,
       themeVisible: false,
       logoutVisible: false,
@@ -83,6 +84,20 @@ class Main extends Component {
     this.changeModal.bind(this,'logoutVisible',false);
     location.reload();
   }
+  deleteGroup(){
+    const {getGroup,setDeleteGroup,activeItem,allGroup,auth,push} = this.props;
+    const username = auth.get('username');
+    this.changeModal('deleteVisible',false);
+    setDeleteGroup({
+      username:username,
+      groupId:allGroup.getIn([activeItem.get('value'),'_id'])
+    }).then(()=>{
+      push('/');
+      getGroup(auth.get('username'));
+    }).catch((result)=>{
+      message.error(result.message);
+    })
+  }
   settingShow(){
       const that = this;
       this.setState({
@@ -113,7 +128,7 @@ class Main extends Component {
     })
   }
   createGroup() {
-    const {auth, createGroup, getGroup} = this.props;
+    const {auth, createGroup, getGroup,push} = this.props;
     const username = auth.get('username');
     this.createError = '';
     this.setState({
@@ -121,6 +136,7 @@ class Main extends Component {
     }, () => {
       createGroup({action: 1, username, groupname: this.refs.groupname.refs.input.value}).then(() => {
         this.changeModal('groupVisible', false);
+        push('/');
         getGroup(username);
       }).catch(result => {
         if (result.success_id == 1002) {
@@ -145,7 +161,7 @@ class Main extends Component {
     }else{
       push(`/chact/${myChact.getIn([gidx,'_id'])}`);
     }
-    
+
   }
   searchGroup(val) {
     this.props.getGroupByName(val).then(result => {
@@ -161,6 +177,7 @@ class Main extends Component {
       themeVisible,
       logoutVisible,
       groupVisible,
+      deleteVisible,
       createError
     } = this.state;
     const {app ,myChact,push} = this.props;
@@ -178,7 +195,7 @@ class Main extends Component {
         <div className='left'>
           <div className='left-title'>
             CHACT
-            <Icon type="ellipsis" className='iconfont' onClick={this.settingShow}/> 
+            <Icon type="ellipsis" className='iconfont' onClick={this.settingShow}/>
             {
               showSetting && <div className='setting'>
                 <div className='setItem'>
@@ -222,6 +239,7 @@ class Main extends Component {
                             return <Menu.Item key={`group${index}`} className='item'>
                               {value.get('groupname')}
                               {value.get('noRead') ? <Badge count={value.get('noRead')} /> : ''}
+                              <Icon type="delete" onClick= {this.changeModal.bind(this,'deleteVisible',true)}/>
                             </Menu.Item>
                           })
                         }
@@ -257,6 +275,10 @@ class Main extends Component {
           onCancel={this.changeModal.bind(this, 'logoutVisible', false)} onOk={this.logout}>
           您确定要退出吗？
         </Modal>
+        <Modal visible={deleteVisible} width={400} closable className='deleteModal' maskClosable={false}
+          onCancel={this.changeModal.bind(this, 'deleteVisible', false)} onOk={this.deleteGroup}>
+          您确定要退出此群聊吗？
+        </Modal>
         <Modal visible={groupVisible} width={455} closable className='groupModal' maskClosable={false}
           onCancel={this.changeModal.bind(this, 'groupVisible', false)} footer={null}>
           <div>
@@ -291,7 +313,8 @@ function mapDispatchToProps(dispatch) {
     getGroupByName,
     setActive,
     reqSendMessage,
-    setMessageNum
+    setMessageNum,
+    setDeleteGroup
   }, dispatch)
 }
 

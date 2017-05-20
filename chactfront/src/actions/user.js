@@ -16,6 +16,10 @@ export const REQUEST_GETUSERINFO = 'REQUEST_GETUSERINFO';
 export const REQUEST_GETUSERINFO_SUCCESS = 'REQUEST_GETUSERINFO_SUCCESS';
 export const REQUEST_GETUSERINFO_FAIL = 'REQUEST_GETUSERINFO_FAIL';
 
+export const REQUEST_DELETEGROUP = 'REQUEST_DELETEGROUP';
+export const REQUEST_DELETEGROUP_SUCCESS = 'REQUEST_DELETEGROUP_SUCCESS';
+export const REQUEST_DELETEGROUP_FAIL = 'REQUEST_DELETEGROUP_FAIL';
+
 export const GET_ACTIVE = 'GET_ACTIVE';
 export const REQUEST_SENDMESSAGE = 'REQUEST_SENDMESSAGE';
 export const SET_MESSAGE_NUM = 'SET_MESSAGE_NUM';
@@ -94,6 +98,16 @@ export function getUserInfo(username){
         const promise = dispatch({
             types:[REQUEST_GETUSERINFO,REQUEST_GETUSERINFO_SUCCESS,REQUEST_GETUSERINFO_FAIL],
             api: action => action('/getUserInfo', 'post', {username:username}),
+        })
+        return promise;
+    }
+}
+
+export function setDeleteGroup(query){
+    return (dispatch,getState) =>{
+        const promise = dispatch({
+            types:[REQUEST_DELETEGROUP,REQUEST_DELETEGROUP_SUCCESS,REQUEST_DELETEGROUP_FAIL],
+            api: action => action('/deleteGroup', 'post', query),
         })
         return promise;
     }
