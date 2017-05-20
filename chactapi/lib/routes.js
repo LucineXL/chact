@@ -141,7 +141,7 @@ module.exports = function (router, socket) {
     const groups = await UserModel.getUserMessage(req.body.username);
     let groupList = [];
     if (groups.groups && groups.groups.length) {
-      groups.groups.map(value => { 
+      groups.groups.map(value => {
         groupList.push({_id: value._id, groupname: value.groupname,message:value.messages.reverse()})
         return groupList;
       })
@@ -237,6 +237,24 @@ module.exports = function (router, socket) {
           message: '操作失败'
         }
       })
+    }
+  })
+  // 删除群聊
+  router.post('/deleteGroup', async(req,res)=>{
+    const user = await UserModel.getUser(req.body.username);
+    console.log(user.groups.indexOf(req.body.groupId));
+    try{
+      user.groups.splice(user.groups.indexOf(req.body.groupId),1);
+      user.save();
+      return res.json({
+        success: true,
+        result: {message:'删除成功'}
+      });
+    }catch(err){
+      return res.json({
+        success: false,
+        result: {message:'删除失败，请稍后重试'}
+      });
     }
   })
 };
