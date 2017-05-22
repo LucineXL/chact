@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import {changeToTimeMMDDHHMM} from 'utils/moment';
 import {reqSendMessage , getUserInfo,createSpeChact} from 'actions/user';
 import {Icon,Popover,Spin,Button} from 'antd';
+import {push} from 'react-router-redux';
 import socket from 'store/socket';
 
 class GroupChact extends Component {
@@ -18,7 +19,13 @@ class GroupChact extends Component {
         this.refs.message.scrollTop = this.refs.message.scrollHeight -this.refs.message.clientHeight;
     }
     textChange(e){
-        const {auth,activeIndex,activeKey,activeGroup,reqSendMessage} = this.props;
+        const {auth,activeIndex,activeKey,activeGroup,reqSendMessage,userInfo} = this.props;
+        let conf = '';
+        if(activeKey=='group'){
+            conf = {groupname:activeGroup.get('groupname')}
+        }else{
+            conf = {to:userInfo.getIn(['user','username'])}
+        }
         const message = {
             timestamp:new Date().getTime(),
             user:auth.get('uid'),
@@ -38,7 +45,7 @@ class GroupChact extends Component {
             setTimeout(()=>{
                 this.refs.message.scrollTop =  this.refs.message.scrollHeight - this.refs.message.clientHeight;
             },0)
-            socket.emit('sendMessage',Object.assign(message,{groupname:activeGroup.get('groupname')}));
+            socket.emit('sendMessage',Object.assign(message,conf));
         }
     }
     userInfo(username){
@@ -46,14 +53,14 @@ class GroupChact extends Component {
         getUserInfo(username);
     }
     createChact(user){
-        const {myChact, createSpeChact} = this.props;
+        const {push,myChact, activeIndex,createSpeChact} = this.props;
         if(myChact.findIndex(item=>item.get('_id')==user.get('_id')) == -1){
             createSpeChact({'_id':user.get('_id'),'username':user.get('username')})
         }
-        
+        push(`/chact/${myChact.getIn([activeIndex,'_id'])}`)
     }
     render() {
-        const {userInfo,activekey,activeGroup,activeIndex,auth,getUserInfo} = this.props;
+        const {userInfo,activeKey,activeGroup,activeIndex,auth,getUserInfo} = this.props;
         const uid = auth.get('uid');
         const message = activeGroup.get('message');
         const user = userInfo && userInfo.get('user') ? userInfo.get('user') : '';
@@ -62,14 +69,14 @@ class GroupChact extends Component {
                 <p className='cardItem'>{user.get('username')} <Icon type={user.get('sex')=='男' ? 'man' : 'woman'}/></p>
                 <p className='cardItem'>电话：{user.get('phone') ? user.get('phone') : '该用户暂未绑定'}</p>
                 <p className='cardItem'>email：{user.get('email') ? user.get('email') : '该用户暂未绑定'}</p>
-                {activekey!=='group' ?<Button onClick={this.createChact.bind(this,user)}>发消息</Button>:''}
+                {activeKey=='group' ?<Button onClick={this.createChact.bind(this,user)}>发消息</Button>:''}
             </div>}
         </div> : ''
         return (
             <div className='chactBox'>
-                <header className='header'>{activekey=='group'?activeGroup.get('groupname'):activeGroup.get('username')}</header>
+                <header className='header'>{activeKey=='group'?activeGroup.get('groupname'):activeGroup.get('username')}</header>
                 <div className='main'>
-                    {activekey=='group' ? <p className='info'>本群聊当前在线人数 ： 10</p> : ''}
+                    {activeKey=='group' ? <p className='info'>本群聊当前在线人数 ： 10</p> : ''}
                     <div className='message' ref='message'>
                         {
                             message.map((value,index)=>{
@@ -114,6 +121,7 @@ function mapStateToProps(state) {
 }
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
+        push,
         reqSendMessage,
         getUserInfo,
         createSpeChact

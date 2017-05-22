@@ -31,11 +31,29 @@ export default (state = Immutable.Map(), action) => {
                     return value.merge(Immutable.fromJS({'message':messages}))
                 })
             }else{
-                let messages = state.getIn(['myChact',gidx,'message']).toJS();
-                messages.push(message);
-                return state.updateIn(['myChact',gidx],value=>{
-                    return value.merge(Immutable.fromJS({'message':messages}))
-                })
+                console.log(gidx);
+                console.log(message)
+                // if(gidx == -1){
+                //     let myChact = [];
+                //     myChact.push({
+                //         _id:user._id,
+                //         username:user.username,
+                //         message:[
+                //             message
+                //         ]
+                //     })
+                //     console.log(myChact);
+                //     return state.update('myChact',value=>{
+                //         value.push({
+                //             _id:user._id,
+                //             username:user.username,
+                //             message:[
+                //                 message
+                //             ]
+                //         })
+                //     return value
+                //     })
+                // }
             }
         }
         case user.SET_MESSAGE_NUM:{

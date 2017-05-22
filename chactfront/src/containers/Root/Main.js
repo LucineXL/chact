@@ -13,7 +13,8 @@ import {
   message,
   Badge
 } from 'antd';
-import {getGroup, createGroup, getGroupByName,setActive,reqSendMessage,setMessageNum,setDeleteGroup} from 'actions/user';
+import {getGroup, createGroup, getGroupByName,setActive,reqSendMessage,setMessageNum,setDeleteGroup,
+  createSpeChact} from 'actions/user';
 import JoinGroup from 'components/Views/JoinGroup';
 import './style.scss'
 const Search = Input.Search;
@@ -32,6 +33,7 @@ class Main extends Component {
     this.logout = this.logout.bind(this);
 
     this.getGroupIndex = this.getGroupIndex.bind(this);
+    this.getChactIndex = this.getChactIndex.bind(this);
     this.state = {
       deleteVisible:false,
       showSetting: false,
@@ -45,6 +47,7 @@ class Main extends Component {
   componentWillMount() {
     const {app, auth,allGroup, getGroup} = this.props;
     if (auth.size && !app.size) {
+      socket.emit('login',{'username':auth.get('username')});
       getGroup(auth.get('username')).then((result)=>{
         socket.emit('joinGroup',{
           groups:result.group,
@@ -54,17 +57,26 @@ class Main extends Component {
     }
   }
   componentDidMount(){
-    socket.on('message', (message) => {
-        this.getGroupIndex(message);
+    socket.on('ComMessage', (message) => {
+      console.log(message)
+      this.getGroupIndex.bind(this,message);
+    })
+    socket.on('SpeMessage', (message) => {
+      console.log(message)
+      this.getChactIndex.bind(this,message);
     })
     socket.on('systemInfo', (systemInfo) => {
       message.info(systemInfo);
     })
   }
   getGroupIndex(message){
+    console.log(456);
     const {app, auth,activeItem,allGroup,reqSendMessage,setMessageNum} = this.props;
     const {content,groupname,timestamp,type,user} = message;
-    const gidx = allGroup.findIndex(item=>item.get('groupname')== message.groupname);
+    if(!allGroup){
+      return false;
+    }
+    const gidx = allGroup.findIndex(item=>item.get('groupname')== groupname);
     const noRead = allGroup.getIn([gidx,'noRead']) ? allGroup.getIn([gidx,'noRead']) : 0;
     reqSendMessage({
       gidx,
@@ -72,12 +84,24 @@ class Main extends Component {
         content,timestamp,type,user
       }
     })
-    if(activeItem.get('key') == 'group' && activeItem.get('value') != gidx){
+    if(!activeItem || (activeItem.get('key') == 'group' && activeItem.get('value') != gidx)){
       setMessageNum({
         gidx,
         count: parseInt(noRead)+1
       })
-    }
+   }
+  }
+  getChactIndex(message){
+    console.log(123);
+    const {app, auth,activeItem,myChact,reqSendMessage,createSpeChact} = this.props;
+    const {content,to,timestamp,type,user} = message;
+    const cidx = myChact.findIndex(item=>item.get('username') == to);
+    reqSendMessage({
+      cidx,
+      message:{
+        content,timestamp,type,user
+      }
+    })
   }
   logout(){
     sessionStorage.removeItem('auth');
@@ -180,7 +204,7 @@ class Main extends Component {
       deleteVisible,
       createError
     } = this.state;
-    const {app ,myChact,push} = this.props;
+    const {app ,auth ,myChact,push} = this.props;
     if (!app.get('allGroup')) {
       return false;
     }
@@ -194,7 +218,7 @@ class Main extends Component {
         </div>
         <div className='left'>
           <div className='left-title'>
-            CHACT
+            {auth.get('username')}
             <Icon type="ellipsis" className='iconfont' onClick={this.settingShow}/>
             {
               showSetting && <div className='setting'>
@@ -314,7 +338,8 @@ function mapDispatchToProps(dispatch) {
     setActive,
     reqSendMessage,
     setMessageNum,
-    setDeleteGroup
+    setDeleteGroup,
+    createSpeChact
   }, dispatch)
 }
 
