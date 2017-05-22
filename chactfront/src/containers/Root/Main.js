@@ -40,9 +40,7 @@ class Main extends Component {
     this.showCreate = this.showCreate.bind(this);
     this.deleteGroup = this.deleteGroup.bind(this);
     this.logout = this.logout.bind(this);
-
     this.getGroupIndex = this.getGroupIndex.bind(this);
-    this.getChactIndex = this.getChactIndex.bind(this);
     this.state = {
       deleteVisible:false,
       showSetting: false,
@@ -67,54 +65,55 @@ class Main extends Component {
   }
   componentDidMount(){
     socket.on('ComMessage', (message) => {
-      console.log(message)
       this.getGroupIndex(message);
     })
     socket.on('SpeMessage', (message) => {
-      console.log(message)
-      this.getChactIndex(message);
+      this.getGroupIndex(message);
     })
     socket.on('systemInfo', (systemInfo) => {
       message.info(systemInfo);
     })
     socket.on('onlineCount',(count)=>{
-      console.log(count);
       this.props.setOnlineCount(count)
     })
   }
   getGroupIndex(message){
-    console.log(456);
-    const {app, auth,activeItem,allGroup,reqSendMessage,setMessageNum} = this.props;
+    const {app, auth,activeItem,allGroup,myChact,reqSendMessage,setMessageNum} = this.props;
     const {content,groupname,timestamp,type,user} = message;
     if(!allGroup){
       return false;
     }
-    const gidx = allGroup.findIndex(item=>item.get('groupname')== groupname);
-    const noRead = allGroup.getIn([gidx,'noRead']) ? allGroup.getIn([gidx,'noRead']) : 0;
+    let gidx,noRead;
+    if(type == 1){
+      gidx = allGroup.findIndex(item=>item.get('groupname')== groupname);
+      noRead = allGroup.getIn([gidx,'noRead']) ? allGroup.getIn([gidx,'noRead']) : 0;
+    }else{
+      gidx = myChact.findIndex(item=>item.get('username') == user.username);
+      noRead = myChact.size &&myChact.getIn([gidx,'noRead']) ? myChact.getIn([gidx,'noRead']) : 0;
+    }
     reqSendMessage({
       gidx,
       message:{
         content,timestamp,type,user
       }
     })
-    if(!activeItem || (activeItem.get('key') == 'group' && activeItem.get('value') != gidx)){
-      setMessageNum({
-        gidx,
-        count: parseInt(noRead)+1
-      })
-   }
-  }
-  getChactIndex(message){
-    console.log(123);
-    const {app, auth,activeItem,myChact,reqSendMessage,createSpeChact} = this.props;
-    const {content,to,timestamp,type,user} = message;
-    const gidx = myChact.findIndex(item=>item.get('username') == user.username);
-    reqSendMessage({
-      gidx,
-      message:{
-        content,timestamp,type,user
+    if(type==1){
+      if( !(activeItem && activeItem.get('key') == 'group' && activeItem.get('value') == gidx)){
+        setMessageNum({
+          type,
+          gidx,
+          count: parseInt(noRead)+1
+        })
       }
-    })
+    }else{
+      if( !(activeItem && activeItem.get('key') == 'chact' && activeItem.get('value') == gidx)){
+        setMessageNum({
+          type,
+          gidx,
+          count: parseInt(noRead)+1
+        })
+      }
+    }
   }
   logout(){
     sessionStorage.removeItem('auth');
@@ -191,11 +190,17 @@ class Main extends Component {
     setActive({'key':item.key.slice(0,5),'value':gidx});
     if(item.key.slice(0,5) == 'group'){
       setMessageNum({
+        type:1,
         gidx,
         count: 0
       })
       push(`/chact/${allGroup.getIn([gidx,'_id'])}`);
     }else{
+      setMessageNum({
+        type:2,
+        gidx,
+        count: 0
+      })
       push(`/chact/${myChact.getIn([gidx,'_id'])}`);
     }
 
@@ -217,10 +222,11 @@ class Main extends Component {
       deleteVisible,
       createError
     } = this.state;
-    const {app ,auth ,myChact,push} = this.props;
+    const {app ,auth ,myChact,activeItem,push} = this.props;
     if (!app.get('allGroup')) {
       return false;
     }
+    const selectedKey = activeItem ? `${activeItem.get('key')}${activeItem.get('value')}` : '';
     const allGroup = app.get('allGroup');
     const img = require('source/photo.jpg');
     return (
@@ -259,7 +265,8 @@ class Main extends Component {
           {allGroup.get('loading') ? <Spin/>: <div className='left-main'>
               {allGroup.get('success')
               ? <div className='list'>
-                    <Menu className='friend-list' defaultOpenKeys={['group','chact']} mode="inline" onSelect={this.clickGroup.bind(this,push)}>
+                    <Menu className='friend-list' defaultOpenKeys={['group','chact']} mode="inline" selectedKeys={[selectedKey]}
+                      onSelect={this.clickGroup.bind(this,push)}>
                       <SubMenu key="chact" title={<span>我的聊天</span>}>
                       {
                         myChact.size && myChact.map((value,index)=>{
@@ -267,6 +274,7 @@ class Main extends Component {
                           return <Menu.Item key={`chact${index}`} className='item'>
                             <div className='photo'>{username.slice(0,1)}</div>
                             <p>{username}</p>
+                             {value.get('noRead') ? <Badge count={value.get('noRead')} /> : ''}
                           </Menu.Item>
                         })
                       }

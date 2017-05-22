@@ -3,7 +3,7 @@ import CSSModules from 'react-css-modules';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {changeToTimeMMDDHHMM} from 'utils/moment';
-import {reqSendMessage , getUserInfo,createSpeChact} from 'actions/user';
+import {reqSendMessage , getUserInfo,createSpeChact,setActive} from 'actions/user';
 import {Icon,Popover,Spin,Button} from 'antd';
 import {push} from 'react-router-redux';
 import socket from 'store/socket';
@@ -16,7 +16,10 @@ class GroupChact extends Component {
         this.createChact = this.createChact.bind(this);
     }
     componentDidMount(){
-        this.refs.message.scrollTop = this.refs.message.scrollHeight -this.refs.message.clientHeight;
+        this.refs.message.scrollTop =  this.refs.message.scrollHeight - this.refs.message.clientHeight;
+    }
+    componentWillReceiveProps(nextProps) {
+        this.refs.message.scrollTop =  this.refs.message.scrollHeight - this.refs.message.clientHeight;
     }
     textChange(e){
         const {auth,activeIndex,activeKey,activeGroup,reqSendMessage} = this.props;
@@ -54,10 +57,11 @@ class GroupChact extends Component {
     }
     createChact(user){
         const {push,myChact, activeIndex,createSpeChact} = this.props;
-        if(myChact.findIndex(item=>item.get('_id')==user.get('_id')) == -1){
+        const index = myChact.findIndex(item=>item.get('_id')==user.get('_id'))
+        if( index == -1){
             createSpeChact({'_id':user.get('_id'),'username':user.get('username')})
         }
-        push(`/chact/${myChact.getIn([activeIndex,'_id'])}`)
+        this.props.setActive({key:'chact',value:index==-1?0:index})
     }
     render() {
         const {userInfo,activeKey,activeGroup,activeIndex,auth,getUserInfo,onlineCount} = this.props;
@@ -123,6 +127,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
         push,
+        setActive,
         reqSendMessage,
         getUserInfo,
         createSpeChact

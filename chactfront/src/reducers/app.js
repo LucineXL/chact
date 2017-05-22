@@ -62,10 +62,17 @@ export default (state = Immutable.Map(), action) => {
             }
         }
         case user.SET_MESSAGE_NUM:{
-            const {count,gidx} = action.query;
-            return state.updateIn(['allGroup','group',gidx],value=>{
-                return value.merge(Immutable.fromJS({'noRead':count}))
-            })
+            const {count,gidx,type} = action.query;
+            if(type==1){
+                return state.updateIn(['allGroup','group',gidx],value=>{
+                    return value.merge(Immutable.fromJS({'noRead':count}))
+                })
+            }else{
+                return state.updateIn(['myChact',gidx],value=>{
+                    return value.merge(Immutable.fromJS({'noRead':count}))
+                })
+            }
+            
         }
         case user.REQUEST_GETUSERINFO:
         case user.REQUEST_GETUSERINFO_SUCCESS:
