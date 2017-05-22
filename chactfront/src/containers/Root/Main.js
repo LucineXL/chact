@@ -13,8 +13,17 @@ import {
   message,
   Badge
 } from 'antd';
-import {getGroup, createGroup, getGroupByName,setActive,reqSendMessage,setMessageNum,setDeleteGroup,
-  createSpeChact} from 'actions/user';
+import {
+  getGroup,
+  createGroup, 
+  getGroupByName,
+  setActive,
+  reqSendMessage,
+  setMessageNum,
+  setDeleteGroup,
+  createSpeChact,
+  setOnlineCount
+} from 'actions/user';
 import JoinGroup from 'components/Views/JoinGroup';
 import './style.scss'
 const Search = Input.Search;
@@ -59,14 +68,18 @@ class Main extends Component {
   componentDidMount(){
     socket.on('ComMessage', (message) => {
       console.log(message)
-      this.getGroupIndex.bind(this,message);
+      this.getGroupIndex(message);
     })
     socket.on('SpeMessage', (message) => {
       console.log(message)
-      this.getChactIndex.bind(this,message);
+      this.getChactIndex(message);
     })
     socket.on('systemInfo', (systemInfo) => {
       message.info(systemInfo);
+    })
+    socket.on('onlineCount',(count)=>{
+      console.log(count);
+      this.props.setOnlineCount(count)
     })
   }
   getGroupIndex(message){
@@ -95,9 +108,9 @@ class Main extends Component {
     console.log(123);
     const {app, auth,activeItem,myChact,reqSendMessage,createSpeChact} = this.props;
     const {content,to,timestamp,type,user} = message;
-    const cidx = myChact.findIndex(item=>item.get('username') == to);
+    const gidx = myChact.findIndex(item=>item.get('username') == user.username);
     reqSendMessage({
-      cidx,
+      gidx,
       message:{
         content,timestamp,type,user
       }
@@ -339,7 +352,8 @@ function mapDispatchToProps(dispatch) {
     reqSendMessage,
     setMessageNum,
     setDeleteGroup,
-    createSpeChact
+    createSpeChact,
+    setOnlineCount
   }, dispatch)
 }
 

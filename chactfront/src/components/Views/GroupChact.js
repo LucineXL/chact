@@ -19,12 +19,12 @@ class GroupChact extends Component {
         this.refs.message.scrollTop = this.refs.message.scrollHeight -this.refs.message.clientHeight;
     }
     textChange(e){
-        const {auth,activeIndex,activeKey,activeGroup,reqSendMessage,userInfo} = this.props;
+        const {auth,activeIndex,activeKey,activeGroup,reqSendMessage} = this.props;
         let conf = '';
         if(activeKey=='group'){
             conf = {groupname:activeGroup.get('groupname')}
         }else{
-            conf = {to:userInfo.getIn(['user','username'])}
+            conf = {to:activeGroup.get('username')}
         }
         const message = {
             timestamp:new Date().getTime(),
@@ -60,7 +60,7 @@ class GroupChact extends Component {
         push(`/chact/${myChact.getIn([activeIndex,'_id'])}`)
     }
     render() {
-        const {userInfo,activeKey,activeGroup,activeIndex,auth,getUserInfo} = this.props;
+        const {userInfo,activeKey,activeGroup,activeIndex,auth,getUserInfo,onlineCount} = this.props;
         const uid = auth.get('uid');
         const message = activeGroup.get('message');
         const user = userInfo && userInfo.get('user') ? userInfo.get('user') : '';
@@ -76,7 +76,7 @@ class GroupChact extends Component {
             <div className='chactBox'>
                 <header className='header'>{activeKey=='group'?activeGroup.get('groupname'):activeGroup.get('username')}</header>
                 <div className='main'>
-                    {activeKey=='group' ? <p className='info'>本群聊当前在线人数 ： 10</p> : ''}
+                    <p className='info'>当前在线人数 ： {onlineCount}</p>
                     <div className='message' ref='message'>
                         {
                             message.map((value,index)=>{
@@ -112,12 +112,13 @@ function mapStateToProps(state) {
     const app = state.get('app');
     const auth = state.get('auth');
     const myChact = app.get('myChact');
+    const onlineCount = app.get('onlineCount');
     const allGroup = app.getIn(['allGroup','group']);
     const activeKey = app.getIn(['activeItem','key']);
     const activeIndex = app.getIn(['activeItem','value']);
     const userInfo = app.get('userInfo');
     const activeGroup =  activeKey=='group' ? app.getIn(['allGroup','group',activeIndex]) : app.getIn(['myChact',activeIndex]);
-    return { auth ,app ,myChact ,allGroup ,activeKey ,activeIndex ,userInfo,activeGroup}
+    return { auth ,app ,myChact ,allGroup ,activeKey ,activeIndex ,userInfo,activeGroup,onlineCount}
 }
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({

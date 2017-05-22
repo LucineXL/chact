@@ -8,12 +8,16 @@ let onlineCount = 0;
 module.exports = function (socket) {
     console.log('链接成功');
     socket.on('login', function (req) {
-        if(onlineUser.findIndex(item=>item._id == socket.id) == -1)
+        const index = onlineUser.findIndex(item=>item._id == socket.id);
+        if(index == -1)
         {
             onlineUser.push({'user':req.username,'_id':socket.id});
             onlineCount += 1;
+        }else{
+            onlineUser[index][_id] = socket.id;
         }
         console.log(onlineUser)
+        socket.broadcast.emit('onlineCount',onlineCount);
         socket.broadcast.emit('systemInfo',`${req.username}上线了~`);
     });
     socket.on('disconnect', function () {
@@ -24,6 +28,7 @@ module.exports = function (socket) {
             onlineUser.splice(index,1);
             onlineCount -= 1;
         }
+        socket.broadcast.emit('onlineCount',onlineCount);
     });
     socket.on('sendMessage',async(req)=>{
         console.log(req)

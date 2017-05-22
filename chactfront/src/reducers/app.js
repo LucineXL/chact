@@ -22,6 +22,12 @@ export default (state = Immutable.Map(), action) => {
                 activeItem: query
             }))
         }
+        case user.SET_ONLINECOUNT:{
+            const {count} = action;
+            return state.merge(Immutable.fromJS({
+                onlineCount: count
+            }))
+        }
         case user.REQUEST_SENDMESSAGE:{
             const {gidx,message} = action.query;
             if(message.type == 1){
@@ -32,28 +38,27 @@ export default (state = Immutable.Map(), action) => {
                 })
             }else{
                 console.log(gidx);
-                console.log(message)
-                // if(gidx == -1){
-                //     let myChact = [];
-                //     myChact.push({
-                //         _id:user._id,
-                //         username:user.username,
-                //         message:[
-                //             message
-                //         ]
-                //     })
-                //     console.log(myChact);
-                //     return state.update('myChact',value=>{
-                //         value.push({
-                //             _id:user._id,
-                //             username:user.username,
-                //             message:[
-                //                 message
-                //             ]
-                //         })
-                //     return value
-                //     })
-                // }
+                if(gidx == -1){
+                    let myChact = [];
+                    myChact.push({
+                        _id:message.user._id,
+                        username:message.user.username,
+                        message:[
+                            message
+                        ]
+                    })
+                    return state.update('myChact',value=>{
+                        return value.merge(Immutable.fromJS(myChact))
+                    })
+                }else{
+                    let messages = state.getIn(['myChact',gidx,'message']).toJS();
+                    console.log(message);
+                    messages.push(message);
+                    console.log(messages)
+                    return state.updateIn(['myChact',gidx,'message'],value=>{
+                        return value.merge(Immutable.fromJS(messages))
+                    })
+                }
             }
         }
         case user.SET_MESSAGE_NUM:{

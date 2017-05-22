@@ -24,12 +24,23 @@ export const GET_ACTIVE = 'GET_ACTIVE';
 export const REQUEST_SENDMESSAGE = 'REQUEST_SENDMESSAGE';
 export const SET_MESSAGE_NUM = 'SET_MESSAGE_NUM';
 export const CREATE_SPE_CHACT = 'CREATE_SPE_CHACT';
+export const SET_ONLINECOUNT = 'SET_ONLINECOUNT';
 
 export function setActive(query){
   return (dispatch,getState) =>{
     const promise = dispatch({
      type: GET_ACTIVE,
      query
+    })
+    return promise;
+  }
+}
+
+export function setOnlineCount(count){
+  return (dispatch,getState) =>{
+    const promise = dispatch({
+     type: SET_ONLINECOUNT,
+     count
     })
     return promise;
   }
