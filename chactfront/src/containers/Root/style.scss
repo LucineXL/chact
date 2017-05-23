@@ -312,6 +312,30 @@
 
                 }
             }
+            .information{
+                margin: 100px;
+                width: 400px;
+                .header{
+                    height: 40px;
+                    font-size: 20px;
+                    border-bottom :1px solid #d8d8d8;
+                }
+                .main{
+                    padding: 20px 0;
+                    .formInfo{
+                        @include flexbox;
+                        align-items: center;
+                        margin: 20px 0;
+                        height: 30px;
+                        label{
+                            width: 80px;
+                        }
+                        .formInfoR{
+
+                        }
+                    }
+                }
+            }
         }
     }
 }

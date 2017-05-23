@@ -76,7 +76,7 @@ module.exports = function (router, socket) {
       sex: req.body.sex,
       birthday: req.body.birthday,
       email: req.body.email,
-      addresss: req.body.addresss
+      address: req.body.address
     });
     // 保存用户账号
     newUser.save((err) => {
@@ -121,8 +121,12 @@ module.exports = function (router, socket) {
             success: true,
             result: {
               message: '认证成功',
-              uid: user._id,
-              username: user.username
+              _id: user._id,
+              username: user.username,
+              sex: user.sex,
+              birthday: user.birthday,
+              email: user.email,
+              address: user.address
             }
           });
         } else {
@@ -256,5 +260,30 @@ module.exports = function (router, socket) {
         result: {message:'删除失败，请稍后重试'}
       });
     }
+  })
+  //修改用户信息
+  router.post('/updateUser' ,async (req,res) =>{
+    const {_id,sex,birthday,email,address} = req.body;
+    UserModel.findByIdAndUpdate({_id},{$set:{
+      sex:sex,
+      birthday:birthday,
+      email:email,
+      address:address
+    }},function(err){
+      if(err){
+        return res.json({
+          success: false,
+          result: {
+            message: '更新失败!'
+          }
+        });
+      }
+      return res.json({
+          success: true,
+          result: {
+            message: '更新成功！'
+          }
+        });
+    });
   })
 };
