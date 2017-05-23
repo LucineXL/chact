@@ -7,7 +7,7 @@ const cwd = process.cwd();
 const extractCSS = new ExtractTextPlugin('css/[name].[contenthash:8].css');
 const extractLESS = new ExtractTextPlugin('css/[name].[contenthash:8].css');
 const extractSASS = new ExtractTextPlugin({
-  filename: 'css/hippe.main.[contenthash:8].css',
+  filename: 'css/main.[contenthash:8].css',
   disable: false,
   allChunks: true,
 });

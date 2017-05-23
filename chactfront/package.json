@@ -1,5 +1,5 @@
 {
-  "name": "react-redux-hot-example",
+  "name": "chact-front",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -90,6 +90,6 @@
     "start:prod": "cross-env NODE_ENV=production  node server"
   },
   "keywords": [],
-  "author": "fairyAhill",
+  "author": "LucineXL",
   "license": "ISC"
 }
