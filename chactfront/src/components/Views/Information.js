@@ -78,7 +78,7 @@ class Information extends Component {
                         <div className='formInfoR'>
                             <DatePicker onChange={(date) => { this.setState({ birthday: date.format('YYYY-MM-DD') }) }}
                                 allowClear={false} disabledDate={this.disabledDate} format='YYYY-MM-DD' 
-                                defaultValue={moment(auth.get('birthday'), 'YYYY-MM-DD')}/>
+                                defaultValue={auth.get('birthday') ? moment(auth.get('birthday'), 'YYYY-MM-DD') : ''}/>
                         </div>
                     </div>
                     <div className='formInfo'>
