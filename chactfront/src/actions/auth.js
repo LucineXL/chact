@@ -5,6 +5,9 @@ export const REQUEST_SIGNUP_FAIL = 'REQUEST_SIGNUP_FAIL';
 export const REQUEST_FINDBYNAME = 'REQUEST_FINDBYNAME';
 export const REQUEST_FINDBYNAME_SUCCESS = 'REQUEST_FINDBYNAME_SUCCESS';
 export const REQUEST_FINDBYNAME_FAIL = 'REQUEST_FINDBYNAME_FAIL';
+export const REQUEST_UPDATE = 'REQUEST_UPDATE';
+export const REQUEST_UPDATE_SUCCESS = 'REQUEST_UPDATE_SUCCESS';
+export const REQUEST_UPDATE_FAIL = 'REQUEST_UPDATE_FAIL';
 export const REQUEST_LOGIN = 'REQUEST_LOGIN';
 export const REQUEST_LOGIN_SUCCESS = 'REQUEST_LOGIN_SUCCESS';
 export const REQUEST_LOGIN_FAIL = 'REQUEST_LOGIN_FAIL';
@@ -32,6 +35,16 @@ export function requestSignup(query){
         return promise;
     }
 }
+export function requestUpdate(query){
+    return (dispatch,getState) =>{
+        const promise = dispatch({
+            types:[REQUEST_UPDATE,REQUEST_UPDATE_SUCCESS,REQUEST_UPDATE_FAIL],
+            api: action => action('/updateUser', 'post', query),
+            query
+        })
+        return promise;
+    }
+}
 export function requestFindByName(query){
     return (dispatch,getState) =>{
         const promise = dispatch({
@@ -49,8 +62,12 @@ export function requestLogin(query){
         })
         promise.then(result=>{
             storageAuth({
-              uid:result.uid,
-              username:result.username
+              _id:result._id,
+              username:result.username,
+              sex: result.sex,
+              birthday: result.birthday,
+              email: result.email,
+              address:result.address
             });
             socket.emit('login',{'username':result.username});
         })

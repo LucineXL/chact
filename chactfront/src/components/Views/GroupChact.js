@@ -31,11 +31,11 @@ class GroupChact extends Component {
         }
         const message = {
             timestamp:new Date().getTime(),
-            user:auth.get('uid'),
+            user:auth.get('_id'),
             type: activeKey=='group' ? 1 : 2,
             content:this.refs.textarea.value,
             user:{
-                '_id':auth.get('uid'),
+                '_id':auth.get('_id'),
                 'username':auth.get('username')
             }
         }
@@ -65,7 +65,7 @@ class GroupChact extends Component {
     }
     render() {
         const {userInfo,activeKey,activeGroup,activeIndex,auth,getUserInfo,onlineCount} = this.props;
-        const uid = auth.get('uid');
+        const uid = auth.get('_id');
         const message = activeGroup.get('message');
         const user = userInfo && userInfo.get('user') ? userInfo.get('user') : '';
         const content = userInfo ? <div className='card'>

@@ -241,16 +241,16 @@ class Main extends Component {
             <Icon type="ellipsis" className='iconfont' onClick={this.settingShow}/>
             {
               showSetting && <div className='setting'>
-                <div className='setItem'>
+                {/*<div className='setItem'>
                   <Icon type="user-add" style={{ color: '#f1a52f' }}/>添加好友
-                </div>
+                </div>*/}
                 <div className='setItem' onClick={this.showCreate}>
                   <Icon type="usergroup-add" style={{ color: '#5788d9' }}/>创建群聊
                 </div>
                 <div className='setItem' onClick={this.changeModal.bind(this, 'themeVisible', true)}>
                   <Icon type="skin" style={{ color: '#70cc29' }}/>更换主题
                 </div>
-                <div className='setItem'>
+                <div className='setItem' onClick={push.bind(this,'/info')}>
                   <Icon type="setting" style={{ color: '#a645dc' }}/>信息编辑
                 </div>
                 <div className='setItem' onClick={this.changeModal.bind(this, 'logoutVisible', true)}>

@@ -14,9 +14,10 @@ module.exports = function (socket) {
             onlineUser.push({'user':req.username,'_id':socket.id});
             onlineCount += 1;
         }else{
-            onlineUser[index][_id] = socket.id;
+            onlineUser[index]._id = socket.id;
         }
         console.log(onlineUser)
+        socket.emit('onlineCount',onlineCount);
         socket.broadcast.emit('onlineCount',onlineCount);
         socket.broadcast.emit('systemInfo',`${req.username}上线了~`);
     });
@@ -28,6 +29,7 @@ module.exports = function (socket) {
             onlineUser.splice(index,1);
             onlineCount -= 1;
         }
+        socket.emit('onlineCount',onlineCount);
         socket.broadcast.emit('onlineCount',onlineCount);
     });
     socket.on('sendMessage',async(req)=>{

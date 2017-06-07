@@ -14,7 +14,6 @@ const mysocket = require('./socket');
 let port = process.env.PORT || 8086;
 //设置跨域访问
 
-
 app.all('*', function (req, res, next) {
     res.header("Access-Control-Allow-Origin", 'http://localhost:8085');
     res.header("Access-Control-Allow-Headers", "X-Requested-With");

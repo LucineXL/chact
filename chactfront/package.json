@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "name": "chact",
+=======
+  "name": "chact-front",
+>>>>>>> 9ec7bb2063d9de42a56f9a85b4e651254b82df9f
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -90,6 +94,10 @@
     "start:prod": "cross-env NODE_ENV=production  node server"
   },
   "keywords": [],
+<<<<<<< HEAD
   "author": "lucineXL",
+=======
+  "author": "LucineXL",
+>>>>>>> 9ec7bb2063d9de42a56f9a85b4e651254b82df9f
   "license": "ISC"
 }
