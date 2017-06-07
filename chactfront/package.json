@@ -1,5 +1,5 @@
 {
-  "name": "react-redux-hot-example",
+  "name": "chact",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -59,7 +59,7 @@
     "postcss-loader": "^1.2.1",
     "postcss-smart-import": "^0.6.6",
     "precss": "^1.4.0",
-    "react": "^15.4.1",
+    "react": "^15.5.4",
     "react-css-modules": "^4.1.0",
     "react-dom": "^15.4.1",
     "react-echarts": "^0.1.1",
@@ -90,6 +90,6 @@
     "start:prod": "cross-env NODE_ENV=production  node server"
   },
   "keywords": [],
-  "author": "fairyAhill",
+  "author": "lucineXL",
   "license": "ISC"
 }
